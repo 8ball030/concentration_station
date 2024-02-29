@@ -1,0 +1,82 @@
+agent_name: concentration_station
+author: eightballer
+version: 0.1.0
+license: Apache-2.0
+description: The defi agent allows the agent to interact cross chain and cross platform.
+aea_version: '>=1.35.0, <2.0.0'
+fingerprint: {}
+fingerprint_ignore_patterns: []
+connections:
+- eightballer/http_client:0.1.0:bafybeidbonr55keq4cothrhhvjwevmu3vl34caqvlxk7n3mnrp2lyarws4
+- eightballer/http_server:0.1.0:bafybeiecw7wqiieupupak4hce3fsvcl7u55gcmgorxescitn35mmkgsfne
+- eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa47vftbpeszotl3x2knm
+- valory/ledger:0.19.0:bafybeicm5etjfdjel3kl32rlvc5ybbbrtclkslqahvemgluevmef77wkbq
+contracts:
+- eightballer/erc_20:0.1.0:bafybeihzyver74cyqzngkzicirjnrphg464hzsyflngosrda7ickmvapzi
+protocols:
+- eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
+- eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
+- eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
+- eightballer/prometheus:1.0.0:bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq
+- open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
+- valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
+- valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
+skills:
+- eightballer/balance_metrics:0.1.0:bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy
+- eightballer/concentration_api:0.1.0:bafybeidt6jrlbaifik23asoxfr5t6pz2vky7ukgnkau73wm2izd5pjjujy
+- eightballer/prometheus:0.1.0:bafybeif4evjhwa3ac5bdojqs2gi7pvr6evnnwml2gsopktdnc6fx3vr5tu
+default_ledger: ethereum
+required_ledgers:
+- ethereum
+default_routing: {}
+connection_private_key_paths: {}
+private_key_paths: {}
+logging_config:
+  disable_existing_loggers: false
+  version: 1
+dependencies:
+  open-aea-ledger-ethereum:
+    version: ==1.37.0
+default_connection: null
+---
+public_id: eightballer/balance_metrics:0.1.0:bafybeifrzxs3gbetwhc5kgvfq3tri7wfx6gzo5fdlfdfycmbrrynkp6a5q
+type: skill
+models:
+  balance_metrics_strategy:
+    args:
+      ledger_ids:
+      - ethereum
+      - arbitrum
+      - celo
+      - base
+      - matic
+      prometheus_enabled: true
+      token_addresses: {}
+---
+public_id: eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa47vftbpeszotl3x2knm
+type: connection
+config:
+  host: ${str:0.0.0.0}
+  port: ${int:8888}
+---
+public_id: eightballer/prometheus:0.1.0:bafybeieq7ioolzjrxh2whdcdn6sfwwunwtnuiph5e45kx2hl667a6vcqta
+type: skill
+is_abstract: true
+---
+public_id: eightballer/concentration_api:0.1.0:bafybeie24q5y2jbarpfip5k63hzxdt7prywdcglskyo5jep7ec7ap33gzy
+type: skill
+models:
+  strategy:
+    args:
+      max_requests_per_day: ${int:10}
+      gwei_per_request: ${int:1}
+      database_uri_string: ${str:sqlite:///txs.db}
+      allow_list: ${list:["0xBa95718a52b5a3DBa749a7641712Dc05a3550d4f","0xa612b8aA84B7bAeF7fa01d1A6E961d567B7d87B3","0x92e4E69ea99c42337c3ea70a9B6aa1b6c91ba5E2"]}
+      ban_list: ${list:[]}
+---
+public_id: eightballer/http_server:0.1.0:bafybeia6shz5vnl5j7chaymvetrdrczdnca4huyy7djpgrptww2zaihliy
+type: connection
+config:
+  host: 0.0.0.0
+  port: 5555
+  target_skill_id: eightballer/concentration_api:0.1.0

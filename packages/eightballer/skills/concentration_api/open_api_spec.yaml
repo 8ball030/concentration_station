@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Allows claiming for drip faucets.
+  version: 0.1.0
+servers:
+  - url: http://0.0.0.0:5555
+paths:
+  /swipe:
+    options:
+      summary: handles_options method for cors
+      requestBody:
+        required: False
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Posts a swipe on a coin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coin_id:
+                  type: string
+                direction:
+                  type: string
+                chain_id:
+                  type: string
+              required:
+                - coin_id
+                - direction
+      responses:
+        '201':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+  /current_coin:
+    get:
+      summary: Returns the current coin
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  coin:
+                    type: string
+                  amount:
+                    type: integer
+                  
+  /ledgers:
+    get:
+      summary: Returns a list of supported ledgers
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ledgers:
+                    type: array
+  /transactions:
+    get:
+      summary: Returns a list of transactions for the agent.
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+
+

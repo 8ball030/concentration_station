@@ -1,0 +1,80 @@
+name: concentration_api
+author: eightballer
+version: 0.1.0
+type: skill
+description: The faucet skill allows holders of olas to claim a tiny amount of native
+  balance on any supported chain.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
+  __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
+  behaviours.py: bafybeicxko5dsy2cbjxgnmosukpu2sgzs6llqacrjhuk5wwqmy7rdfaimu
+  dialogues.py: bafybeigyd6mmsc7ms5di7bnsmjewwswdkreulf5fuh3wrzuat2pqe5nn6y
+  handlers.py: bafybeih3xrphftcxqwuy2obsjmkdf5y5kpggb4gkoj63rasx6qpitscche
+  models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
+  open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
+  strategy.py: bafybeiatumuzjwf3ttcsglmaqwvjdsnoq4pg4aechoyrmvgwreas3qbwby
+  tests/test_base.py: bafybeifdxtgkxo7shk5apcwtfp6nbf6ik274cnbfmhnmiel3kqo2ok7iqa
+fingerprint_ignore_patterns: []
+connections:
+- valory/ledger:0.19.0:bafybeicm5etjfdjel3kl32rlvc5ybbbrtclkslqahvemgluevmef77wkbq
+contracts: []
+protocols:
+- eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
+- eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
+- eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
+- open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
+- valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
+- valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
+skills:
+- eightballer/balance_metrics:0.1.0:bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy
+behaviours:
+  balance_check:
+    args: {}
+    class_name: BalanceCheckBehaviour
+  transaction:
+    args: {}
+    class_name: TransactionBehaviour
+handlers:
+  http_handler:
+    args: {}
+    class_name: HttpHandler
+  ledger_api_handler:
+    args: {}
+    class_name: LedgerApiHandler
+  signing:
+    args: {}
+    class_name: SigningHandler
+models:
+  contract_api_dialogues:
+    args: {}
+    class_name: ContractApiDialogues
+  default_dialogues:
+    args: {}
+    class_name: DefaultDialogues
+  http_dialogues:
+    args: {}
+    class_name: HttpDialogues
+  ledger_api_dialogues:
+    args: {}
+    class_name: LedgerApiDialogues
+  signing_dialogues:
+    args: {}
+    class_name: SigningDialogues
+  strategy:
+    args:
+      allow_list: []
+      ban_list: []
+      database_uri_string: sqlite:///faucet_requests.db
+      gwei_per_request: 1
+      max_requests_per_day: 1
+    class_name: Strategy
+dependencies:
+  openapi-core:
+    version: ==0.14.5
+  openapi-spec-validator:
+    version: ==0.2.8
+  sqlalchemy:
+    version: ==1.4.36
+is_abstract: false
