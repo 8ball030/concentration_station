@@ -10,6 +10,7 @@ connections:
 - eightballer/http_client:0.1.0:bafybeidbonr55keq4cothrhhvjwevmu3vl34caqvlxk7n3mnrp2lyarws4
 - eightballer/http_server:0.1.0:bafybeiecw7wqiieupupak4hce3fsvcl7u55gcmgorxescitn35mmkgsfne
 - eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa47vftbpeszotl3x2knm
+- eightballer/websocket_server:0.1.0:bafybeifgz7xvtprr4rechlscqrgmv2krwxgppbgujg67kmj3bdm47xadom
 - valory/ledger:0.19.0:bafybeicm5etjfdjel3kl32rlvc5ybbbrtclkslqahvemgluevmef77wkbq
 contracts:
 - eightballer/erc_20:0.1.0:bafybeihzyver74cyqzngkzicirjnrphg464hzsyflngosrda7ickmvapzi
@@ -18,6 +19,7 @@ protocols:
 - eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - eightballer/prometheus:1.0.0:bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq
+- eightballer/websockets:0.1.0:bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
@@ -80,3 +82,10 @@ config:
   host: 0.0.0.0
   port: 5555
   target_skill_id: eightballer/concentration_api:0.1.0
+---
+public_id: eightballer/websocket_server:0.1.0:bafybeiewepahfzsb4hlzdfomaeoinrrcdufsjlfsgjuox637gwjfneoxhu
+type: connection
+config:
+  target_skill_id: eightballer/concentration_api:0.1.0
+  port: 5556
+  host: 0.0.0.0
