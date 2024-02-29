@@ -753,6 +753,11 @@ class WebSocketHandler(HttpHandler):
 
     SUPPORTED_PROTOCOL = WebsocketsMessage.protocol_id
 
+    @property
+    def strategy(self) -> "Strategy":
+        """Get the strategy."""
+        return cast(Strategy, self.context.strategy)
+
     def handle(self, message: Message) -> None:
         """
         Implement the reaction to an envelope.
@@ -811,17 +816,15 @@ class WebSocketHandler(HttpHandler):
 
         :param message: the message
         """
-        if self.strategy.ping_pong_enabled:
-            # we send a pong message
-            self.context.logger.info(
-                "Handling ping message in skill: {}".format(message.data)
-            )
-            pong_message = dialogue.reply(
-                performative=WebsocketsMessage.Performative.SEND,
-                target_message=dialogue.last_message,
-                data=message.data + " pong",
-            )
-            self.context.outbox.put_message(message=pong_message)
+        self.context.logger.info(
+            "Handling ping message in skill: {}".format(message.data)
+        )
+        pong_message = dialogue.reply(
+            performative=WebsocketsMessage.Performative.SEND,
+            target_message=dialogue.last_message,
+            data=message.data + " pong",
+        )
+        self.context.outbox.put_message(message=pong_message)
 
     @property
     def websocket_dialogues(self) -> "WebsocketsDialogues":
