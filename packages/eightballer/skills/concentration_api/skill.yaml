@@ -24,6 +24,7 @@ protocols:
 - eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
 - eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
+- eightballer/websockets:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
@@ -40,6 +41,9 @@ handlers:
   http_handler:
     args: {}
     class_name: HttpHandler
+  websocket:
+    args: {}
+    class_name: WebSocketHandler
   ledger_api_handler:
     args: {}
     class_name: LedgerApiHandler
@@ -62,6 +66,9 @@ models:
   signing_dialogues:
     args: {}
     class_name: SigningDialogues
+  websocket_dialogues:
+    args: {}
+    class_name: WebSocketDialogues
   strategy:
     args:
       allow_list: []
