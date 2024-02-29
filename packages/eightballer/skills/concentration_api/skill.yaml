@@ -10,11 +10,11 @@ fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
   behaviours.py: bafybeicxko5dsy2cbjxgnmosukpu2sgzs6llqacrjhuk5wwqmy7rdfaimu
-  dialogues.py: bafybeigyd6mmsc7ms5di7bnsmjewwswdkreulf5fuh3wrzuat2pqe5nn6y
-  handlers.py: bafybeih3xrphftcxqwuy2obsjmkdf5y5kpggb4gkoj63rasx6qpitscche
+  dialogues.py: bafybeifi6krrehxvoxkoudpsiqf5i2z5msmofvojpthplzinywmhcgaqt4
+  handlers.py: bafybeiclnzhor25ksyasnosn5ifgocnyyneiryqaajey3gbdceslahka4y
   models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
   open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
-  strategy.py: bafybeiatumuzjwf3ttcsglmaqwvjdsnoq4pg4aechoyrmvgwreas3qbwby
+  strategy.py: bafybeic3jcfyswdeb3uixnl44rybosdmq64xdsrbzrn5j2k4bvmxv7x3ce
   tests/test_base.py: bafybeifdxtgkxo7shk5apcwtfp6nbf6ik274cnbfmhnmiel3kqo2ok7iqa
 fingerprint_ignore_patterns: []
 connections:
@@ -24,6 +24,7 @@ protocols:
 - eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
 - eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
+- eightballer/websockets:0.1.0:bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
@@ -40,6 +41,9 @@ handlers:
   http_handler:
     args: {}
     class_name: HttpHandler
+  websocket:
+    args: {}
+    class_name: WebSocketHandler
   ledger_api_handler:
     args: {}
     class_name: LedgerApiHandler
@@ -62,6 +66,9 @@ models:
   signing_dialogues:
     args: {}
     class_name: SigningDialogues
+  websocket_dialogues:
+    args: {}
+    class_name: WebSocketDialogues
   strategy:
     args:
       allow_list: []

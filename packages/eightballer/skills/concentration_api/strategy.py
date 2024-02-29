@@ -41,6 +41,7 @@ class Strategy(Model):  # pylint: disable=too-many-instance-attributes
     """This class defines a strategy for the agent."""
 
     _balance: int
+    clients = {}
 
     @property
     def balance(self) -> int:

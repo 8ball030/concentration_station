@@ -31,6 +31,8 @@ from aea.skills.base import Handler
 
 from packages.eightballer.protocols.default import DefaultMessage
 from packages.eightballer.protocols.http.message import HttpMessage
+from packages.eightballer.protocols.websockets.dialogues import WebsocketsDialogue, WebsocketsDialogues
+from packages.eightballer.protocols.websockets.message import WebsocketsMessage
 from packages.eightballer.skills.balance_metrics.strategy import Balance
 from packages.eightballer.skills.concentration_api.behaviours import TransactionBehaviour
 from packages.eightballer.skills.concentration_api.dialogues import (
@@ -743,3 +745,114 @@ class SigningHandler(Handler):
         self.context.logger.warning(
             f"cannot handle signing message of performative={signing_msg.performative} in dialogue={signing_dialogue}."
         )
+
+
+
+class WebSocketHandler(HttpHandler):
+    """This class scaffolds a handler."""
+
+    SUPPORTED_PROTOCOL = WebsocketsMessage.protocol_id
+
+    @property
+    def strategy(self) -> "Strategy":
+        """Get the strategy."""
+        return cast(Strategy, self.context.strategy)
+
+    def handle(self, message: Message) -> None:
+        """
+        Implement the reaction to an envelope.
+
+        :param message: the message
+        """
+        if message.performative == WebsocketsMessage.Performative.CONNECT:
+            return self._handle_connect(message)
+
+        dialogue = self.context.websocket_dialogues.get_dialogue(message)
+
+        if message.performative == WebsocketsMessage.Performative.DISCONNECT:
+            return self._handle_disconnect(message, dialogue)
+        # it is an existing dialogue
+        if dialogue is None:
+            self.context.logger.error(
+                "Could not locate dialogue for message={}".format(message)
+            )
+            return None
+        if message.performative == WebsocketsMessage.Performative.SEND:
+            return self._handle_send(message, dialogue)
+        self.context.logger.warning(
+            "Cannot handle websockets message of performative={}".format(
+                message.performative
+            )
+        )
+        return None
+
+    def _handle_disconnect(
+        self, message: Message, dialogue: WebsocketsDialogue
+    ) -> None:
+        """
+        Implement the reaction to an envelope.
+
+        :param message: the message
+        """
+        self.context.logger.info(
+            "Handling disconnect message in skill: {}".format(message)
+        )
+        ws_dialogues_to_connections = {
+            v.incomplete_dialogue_label: k for k, v in self.strategy.clients.items()
+        }
+        if dialogue.incomplete_dialogue_label in ws_dialogues_to_connections:
+            del self.strategy.clients[
+                ws_dialogues_to_connections[dialogue.incomplete_dialogue_label]
+            ]
+            self.context.logger.info(f"Total clients: {len(self.strategy.clients)}")
+        else:
+            self.context.logger.warning(
+                f"Could not find dialogue to disconnect: {dialogue.incomplete_dialogue_label}"
+            )
+
+    def _handle_send(self, message: Message, dialogue) -> None:
+        """
+        Implement the reaction to an envelope.
+
+        :param message: the message
+        """
+        self.context.logger.info(
+            "Handling ping message in skill: {}".format(message.data)
+        )
+        pong_message = dialogue.reply(
+            performative=WebsocketsMessage.Performative.SEND,
+            target_message=dialogue.last_message,
+            data=message.data + " pong",
+        )
+        self.context.outbox.put_message(message=pong_message)
+
+    @property
+    def websocket_dialogues(self) -> "WebsocketsDialogues":
+        """Get the http dialogues."""
+        return cast(WebsocketsDialogues, self.context.websocket_dialogues)
+
+    def _handle_connect(self, message: Message) -> None:
+        """
+        Implement the reaction to the connect message.
+        """
+
+        dialogue: WebsocketsDialogue = self.websocket_dialogues.get_dialogue(message)
+
+        if dialogue is not None:
+            self.context.logger.debug(
+                "Already have a dialogue for message={}".format(message)
+            )
+            return
+        # we need to create a new dialogue
+        client_reference = message.url
+        dialogue = self.websocket_dialogues.update(message)
+        response_msg = dialogue.reply(
+            performative=WebsocketsMessage.Performative.CONNECTION_ACK,
+            success=True,
+            target_message=message,
+        )
+        self.context.logger.info(
+            "Handling connect message in skill: {}".format(client_reference)
+        )
+        self.strategy.clients[client_reference] = dialogue
+        self.context.outbox.put_message(message=response_msg)

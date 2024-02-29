@@ -66,6 +66,15 @@ from packages.valory.protocols.ledger_api.dialogues import (
     LedgerApiDialogues as BaseLedgerApiDialogues,
 )
 
+
+from packages.eightballer.protocols.websockets.dialogues import (
+    WebsocketsDialogue as BaseWebsocketsDialogue,
+)
+from packages.eightballer.protocols.websockets.dialogues import (
+    WebsocketsDialogues as BaseWebsocketsDialogues,
+)
+
+
 HttpDialogue = BaseHttpDialogue
 
 
@@ -97,6 +106,36 @@ class HttpDialogues(Model, BaseHttpDialogues):
             role_from_first_message=role_from_first_message,
         )
 
+
+
+class WebSocketDialogues(Model, BaseWebsocketsDialogues):
+    """The dialogues class keeps track of all dialogues."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        """
+        Initialize dialogues.
+
+        :param kwargs: keyword arguments
+        """
+        Model.__init__(self, **kwargs)
+
+        def role_from_first_message(  # pylint: disable=unused-argument
+            message: Message, receiver_address: Address
+        ) -> BaseDialogue.Role:
+            """Infer the role of the agent from an incoming/outgoing first message
+
+            :param message: an incoming/outgoing first message
+            :param receiver_address: the address of the receiving agent
+            :return: The role of the agent
+            """
+            del message, receiver_address
+            return BaseWebsocketsDialogue.Role.SERVER
+
+        BaseWebsocketsDialogues.__init__(
+            self,
+            self_address=str(self.skill_id),
+            role_from_first_message=role_from_first_message,
+        )
 
 class ContractApiDialogue(BaseContractApiDialogue):
     """The dialogue class maintains state of a dialogue and manages it."""
