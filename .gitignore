@@ -26,5 +26,9 @@ packages/eightballer/connections/http_server
 packages/eightballer/skills/prometheus
 packages/eightballer/skills/balance_metrics
 
+packages/eightballer/protocols/websockets
+packages/eightballer/connections/websocket_server
+
+
 *private_key*
 agent

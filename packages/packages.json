@@ -1,7 +1,7 @@
 {
     "dev": {
         "skill/eightballer/concentration_api/0.1.0": "bafybeidt6jrlbaifik23asoxfr5t6pz2vky7ukgnkau73wm2izd5pjjujy",
-        "agent/eightballer/concentration_station/0.1.0": "bafybeifnycxylb5ene5vc2bl63ygwft5yp33oz5n354iqmffmcthu6ko7q"
+        "agent/eightballer/concentration_station/0.1.0": "bafybeihjrqqcnfu2bsk6p4m7zgrdz4py3ktxwcngauyp2x3gj5l7plm65y"
     },
     "third_party": {
         "protocol/eightballer/prometheus/1.0.0": "bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq",
@@ -17,6 +17,8 @@
         "connection/eightballer/http_client/0.1.0": "bafybeidbonr55keq4cothrhhvjwevmu3vl34caqvlxk7n3mnrp2lyarws4",
         "connection/eightballer/http_server/0.1.0": "bafybeiecw7wqiieupupak4hce3fsvcl7u55gcmgorxescitn35mmkgsfne",
         "skill/eightballer/prometheus/0.1.0": "bafybeif4evjhwa3ac5bdojqs2gi7pvr6evnnwml2gsopktdnc6fx3vr5tu",
-        "skill/eightballer/balance_metrics/0.1.0": "bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy"
+        "skill/eightballer/balance_metrics/0.1.0": "bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy",
+        "protocol/eightballer/websockets/0.1.0": "bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e",
+        "connection/eightballer/websocket_server/0.1.0": "bafybeifgz7xvtprr4rechlscqrgmv2krwxgppbgujg67kmj3bdm47xadom"
     }
 }
