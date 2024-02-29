@@ -1,6 +1,49 @@
-# Dev-template
+# Concentration Station
 
-A template for development with the open-autonomy framework. Find the documentation [here](https://docs.autonolas.network).
+Using the Open Autonomy Framework we have developed a thought controlled tinder inspired application for speculating on altcoins.
+
+
+Find the documentation [here](https://docs.autonolas.network).
+
+# Setup
+
+```bash
+git clone https://github.com/8ball030/concentration_station.git
+cd concentration_station
+poetry install
+# create a ethereum key
+aea generate-key ethereum
+```
+
+# Running the agent.
+
+```bash
+make run-agent
+```
+
+
+# Sample requests
+The api for agent is available at `http://localhost:5555' and the following are the sample requests.
+
+```bash
+curl localhost:5000/current_coin
+```
+
+To see the available ledgers.
+```bash
+curl localhost:5555/ledgers
+```
+
+To see transactions by the agent
+```bash
+curl localhost:5555/transactions
+```
+
+To submit a swipe request;
+```bash
+curl -X POST --header "Content-Type: application/json" localhost:5000/swipe --data "{\"coin_id\": \"test\", \"direction\": \"buy\"}"
+```
+
 
 ## System requirements
 
