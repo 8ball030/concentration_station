@@ -127,6 +127,17 @@ class HttpHandler(Handler):
                 http_msg.body,
             )
         )
+
+        if "Upgrade: websocket" in http_msg.headers:
+            self.context.strategy.clients[
+                http_dialogue.incomplete_dialogue_label.get_incomplete_version().dialogue_reference[
+                    0
+                ] 
+            ] = http_dialogue
+            
+            self.context.logger.debug(f"Total clients: {len(self.context.strategy.clients)}")
+            return
+
         if http_msg.method == "post":
             self._handle_swipe(http_msg, http_dialogue)
         elif http_msg.method == "options":
@@ -157,7 +168,7 @@ class HttpHandler(Handler):
             version=http_msg.version,
             status_code=200,
             status_text="",
-            headers=http_msg.headers,
+            headers=self._get_cors_headers(http_msg),
             body=json.dumps({"ledgers": {i: asdict(k) for i, k in ledgers.items()}}).encode("utf-8"),
         )
         self.context.outbox.put_message(message=http_response)
@@ -183,7 +194,7 @@ class HttpHandler(Handler):
             version=http_msg.version,
             status_code=200,
             status_text="",
-            headers=http_msg.headers,
+            headers=self._get_cors_headers(http_msg),
             body=json.dumps([f for f in txs]).encode("utf-8"),
         )
         self.context.outbox.put_message(message=http_response)
@@ -198,103 +209,27 @@ class HttpHandler(Handler):
         :param http_dialogue: the http dialogue
         """
         whitelist = self.context.strategy.allow_list
-        data = {
-            "id": "ufo-gaming",
-            "coin_id": 16801,
-            "name": "UFO Gaming",
-            "symbol": "UFO",
-            "market_cap_rank": 774,
-            "thumb": "https://assets.coingecko.com/coins/images/16801/thumb/ufo.png?1696516371",
-            "small": "https://assets.coingecko.com/coins/images/16801/small/ufo.png?1696516371",
-            "large": "https://assets.coingecko.com/coins/images/16801/large/ufo.png?1696516371",
-            "slug": "ufo-gaming",
-            "price_btc": 2.4986779685460822e-11,
-            "score": 0,
-            "data": {
-                "price": "$0.0<sub title=\"0.000001532\">5</sub>1532",
-                "price_btc": "0.0000000000249867796854608",
-                "price_change_percentage_24h": {
-                    "aed": 18.706446340161907,
-                    "ars": 18.78801102750877,
-                    "aud": 18.585299440542073,
-                    "bch": 13.050382413237333,
-                    "bdt": 18.771048602002775,
-                    "bhd": 18.715498091886484,
-                    "bmd": 18.70321447394005,
-                    "bnb": 19.41511029398131,
-                    "brl": 18.72470872841683,
-                    "btc": 17.71651810983026,
-                    "cad": 18.62961536393027,
-                    "chf": 19.35618740424961,
-                    "clp": 17.152156229912894,
-                    "cny": 18.54325265340448,
-                    "czk": 19.012356147160485,
-                    "dkk": 19.006570984366267,
-                    "dot": 12.544120487067062,
-                    "eos": 8.878817112937371,
-                    "eth": 15.135730126607584,
-                    "eur": 19.011352460060763,
-                    "gbp": 19.02902920566729,
-                    "gel": 18.2569617879483,
-                    "hkd": 18.723079991306335,
-                    "huf": 18.7547385947895,
-                    "idr": 18.67936474059104,
-                    "ils": 17.964081225208496,
-                    "inr": 18.708872139280892,
-                    "jpy": 18.07438509232594,
-                    "krw": 18.620695142858796,
-                    "kwd": 18.719418110860932,
-                    "lkr": 18.58285846591086,
-                    "ltc": 3.9426355643880377,
-                    "mmk": 18.76689251961773,
-                    "mxn": 18.318993171639416,
-                    "myr": 18.282563535670263,
-                    "ngn": 21.697405665774845,
-                    "nok": 18.924808097484892,
-                    "nzd": 18.822834291538822,
-                    "php": 18.47430598823946,
-                    "pkr": 19.000160464326587,
-                    "pln": 18.9801969469475,
-                    "rub": 18.605860436631723,
-                    "sar": 18.69792889926615,
-                    "sek": 19.116752328755048,
-                    "sgd": 18.643968398774327,
-                    "thb": 18.40653884765127,
-                    "try": 18.832123755389574,
-                    "twd": 18.598968587759618,
-                    "uah": 18.362041666094584,
-                    "usd": 18.70321447394005,
-                    "vef": 18.703214473940058,
-                    "vnd": 18.791142673686466,
-                    "xag": 17.04137876880787,
-                    "xau": 17.866291208691976,
-                    "xdr": 19.01232098366433,
-                    "xlm": 12.414708390770047,
-                    "xrp": 9.428437461534065,
-                    "yfi": 10.225578295459727,
-                    "zar": 18.01549689673078,
-                    "bits": 17.716518109830258,
-                    "link": 13.556528607161876,
-                    "sats": 17.716518109830258
-                },
-                "market_cap": "$39,353,630",
-                "market_cap_btc": "644.2339624784",
-                "total_volume": "$2,216,220",
-                "total_volume_btc": "36.1349661084313",
-                "sparkline": "https://www.coingecko.com/coins/16801/sparkline.svg",
-                "content": None
-            }
-        }
         http_response = http_dialogue.reply(
             performative=HttpMessage.Performative.RESPONSE,
             target_message=http_msg,
             version=http_msg.version,
             status_code=200,
             status_text="",
-            headers=http_msg.headers,
-            body=json.dumps(data).encode("utf-8"),
+            headers=self._get_cors_headers(http_msg),
+            body=json.dumps(self.context.strategy.current_coin).encode("utf-8"),
         )
         self.context.outbox.put_message(message=http_response)
+
+    
+    def _get_cors_headers(self, http_msg: HttpMessage) -> str:
+        """
+        returns the expected cors headers
+        """
+        cors_headers = "Access-Control-Allow-Origin: *\n"
+        cors_headers += "Access-Control-Allow-Methods: GET,POST\n"
+        cors_headers += "Access-Control-Allow-Headers: Content-Type,Accept\n"
+
+        return  f"{cors_headers}{http_msg.headers}"
 
     def _handle_pre_flight(
         self, http_msg: HttpMessage, http_dialogue: HttpDialogue
@@ -306,9 +241,6 @@ class HttpHandler(Handler):
         :param http_dialogue: the http dialogue
         """
 
-        cors_headers = "Access-Control-Allow-Origin: *\n"
-        cors_headers += "Access-Control-Allow-Methods: POST\n"
-        cors_headers += "Access-Control-Allow-Headers: Content-Type,Accept\n"
 
         http_response = http_dialogue.reply(
             performative=HttpMessage.Performative.RESPONSE,
@@ -316,7 +248,7 @@ class HttpHandler(Handler):
             version=http_msg.version,
             status_code=200,
             status_text="",
-            headers=f"{cors_headers}{http_msg.headers}",
+            headers=self._get_cors_headers(http_msg=http_msg),
             body=b"",
         )
         self.context.outbox.put_message(message=http_response)
@@ -340,6 +272,9 @@ class HttpHandler(Handler):
         direction = payload.get("direction")
         coin_id = payload.get("coin_id")
         ledger_id = payload.get("ledger_id", "ethereum")
+
+        strategy._current_coin = strategy.get_new_coin()
+
 
         status_text = "Success!"
             # valid = strategy.is_request_valid(address, request_ledger)
@@ -372,7 +307,7 @@ class HttpHandler(Handler):
             version=http_msg.version,
             status_code=201,
             status_text=status_text,
-            headers=http_msg.headers,
+            headers=self._get_cors_headers(http_msg),
             body=json.dumps({"result": status_text}).encode("utf-8"),
         )
         self.context.logger.info("responding with: {}".format(status_text))

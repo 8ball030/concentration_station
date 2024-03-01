@@ -83,3 +83,8 @@ v := $(shell pip -V | grep virtualenvs)
 run-agent:
 	rm -rf agent
 	bash scripts/run_agent.sh eightballer/concentration_station
+
+hashes:
+	poetry install
+	poetry run autonomy packages lock
+	poetry run autonomy push-all
