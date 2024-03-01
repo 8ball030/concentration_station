@@ -7,10 +7,10 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   __init__.py: bafybeibwssulepekywb5lsmt24izi36pldfghmcwfpso46rpvovsfbcnmq
-  behaviours.py: bafybeidq2vryrwwrymyobryqihbgwd5vw274uzcxvc4qxiawicqtf2fk2i
+  behaviours.py: bafybeihp6fhikyqd25vddvteg4iorlfhbnfspujfcsbkz7v6zsehr55piy
   dialogues.py: bafybeia37qtkxskincbgsbnjirwhvgj5ledj3f2rsyjoyizhzwzl7xbdli
-  handlers.py: bafybeickpzkf6vagdhsaw47rsahhzlnhidzomtmm5l45hqbx3mbb2kkpoq
-  strategy.py: bafybeieh7gyc5he5hith44swrhb7tsxr3wkp27rhsrv6qdthp6sbbbqe34
+  handlers.py: bafybeieq2r23e5obkeyoo6qd25aphv5256gqsaaccldxtjmwr4oyhpulqu
+  strategy.py: bafybeibeeljm545tvgplzqvv5lfve3au4cgeov45jnmm26zydcf24fjtke
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeierw3ptzrhxoc4frwowkdceyijn65xjcj3keq3mlwdy6g4xj3ikpu
@@ -22,7 +22,7 @@ protocols:
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - eightballer/orders:0.1.0:bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y
 skills:
-- eightballer/concentration_api:0.1.0:bafybeigxqtqlmlntjomfdupeemygr4v63db4mxtfxbi3t2z7xnjulu42om
+- eightballer/concentration_api:0.1.0:bafybeif3uuuqjuihbhksndjokowctlzpudml5jnrmceebweaszljhnos74
 behaviours:
   price_routing_behaviour:
     class_name: TransactionPreparationBehaviour

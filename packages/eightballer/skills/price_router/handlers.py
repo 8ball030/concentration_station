@@ -19,6 +19,7 @@
 
 """This package contains a scaffold of a handler."""
 
+from datetime import datetime
 import json
 from typing import Optional, cast
 
@@ -72,6 +73,9 @@ class HttpHandler(Handler):
         http_message = cast(HttpMessage, message)
         dialogue = self.context.http_dialogues.update(http_message)
 
+        if str(http_message.body).find("Rate limit exceeded.") != -1:
+            self.context.logger.error("Rate limit exceeded!")
+            self.strategy.rate_limited, self.strategy.rate_limited_time = True, datetime.now()
         result = {}
         if http_message.performative == HttpMessage.Performative.RESPONSE:
             response = http_message.body
@@ -79,15 +83,13 @@ class HttpHandler(Handler):
             for key in self.strategy.api_routers[0]['api_request']['keys']:
                 if key in data:
                     result[key] = data[key]
-            
         self.context.logger.debug(f"result: {result}")
         self.context.price_routing_strategy.prepared_transactions[dialogue.chain_id][dialogue.swap_side.name] = result
+        self.strategy.rate_limited_time, self.strategy.rate_limited = None, False
 
 
     def teardown(self) -> None:
         """Implement the handler teardown."""
-
-
 
 
 class OrdersHandler(Handler):
