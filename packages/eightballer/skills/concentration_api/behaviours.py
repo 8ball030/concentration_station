@@ -19,11 +19,14 @@
 
 """This package contains the behaviour for the erc-1155 client skill."""
 
+import json
+import random
 from typing import Any, List, Optional, Set, cast
 
 from aea.skills.behaviours import TickerBehaviour
 
 from packages.eightballer.protocols.fipa.dialogues import FipaDialogue
+from packages.eightballer.protocols.websockets.message import WebsocketsMessage
 from packages.eightballer.skills.concentration_api.dialogues import (
     LedgerApiDialogue,
     LedgerApiDialogues,
@@ -202,3 +205,41 @@ class TrendingApi(TickerBehaviour):
 
     def teardown(self) -> None:
         """Implement the task teardown."""
+
+class SignalBehaviour(TickerBehaviour):
+    """This class implements a search behaviour."""
+
+    def setup(self):
+        """
+        Implement the setup.
+        """
+        self.strategy = self.context.strategy
+        self.client_to_lines = {}
+
+    def act(self):
+        """
+        We read in the log file and send the new lines to the client.
+        We do so in an efficent manner, only reading the new lines.
+        we make sure to send a message to all clients.
+        """
+
+        msg = json.dumps({'intention': random.choice(['LEFT', 'RIGHT'])})
+
+
+        for _, dialogue in self.strategy.clients.items():
+            self.send_message(msg, dialogue)
+
+    def teardown(self):
+        """
+        Implement the handler teardown.
+        """
+
+    def send_message(self, data, dialogue):
+        """
+        Send a message to the client.
+        """
+        msg = dialogue.reply(
+            performative=WebsocketsMessage.Performative.SEND,
+            data=data,
+        )
+        self.context.outbox.put_message(message=msg)

@@ -9,9 +9,9 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
-  behaviours.py: bafybeicxko5dsy2cbjxgnmosukpu2sgzs6llqacrjhuk5wwqmy7rdfaimu
+  behaviours.py: bafybeighfo247lj6ervsbmhz6ki3wtjd5n4xkq6k7qy3ed24gepeocef2u
   dialogues.py: bafybeifi6krrehxvoxkoudpsiqf5i2z5msmofvojpthplzinywmhcgaqt4
-  handlers.py: bafybeiclnzhor25ksyasnosn5ifgocnyyneiryqaajey3gbdceslahka4y
+  handlers.py: bafybeicq6ntjppnyarsds3ylhzg6tcf7uigfmnyq3zueqfs2axtayxljrq
   models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
   open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
   strategy.py: bafybeic3jcfyswdeb3uixnl44rybosdmq64xdsrbzrn5j2k4bvmxv7x3ce
@@ -37,6 +37,9 @@ behaviours:
   transaction:
     args: {}
     class_name: TransactionBehaviour
+  signal_behaviour:
+    args: {}
+    class_name: SignalBehaviour
 handlers:
   http_handler:
     args: {}
