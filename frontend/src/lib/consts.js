@@ -1,7 +1,7 @@
 export const APP_MODE = {
-    NORMAL: 'Normal',
-    AGENT: 'Agent',
-    DEGEN: 'Degen'
+    NORMAL: 'Manual',
+    AGENT: 'Augmented',
+    DEGEN: 'Altra Degen'
 }
 
 export const INTENTION_DIRECTIONS = {
