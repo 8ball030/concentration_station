@@ -44,6 +44,7 @@
 	});
 
 	$: mode.subscribe((value) => {
+		console.log('mode', value)
 		if (value === APP_MODE.DEGEN) {
 			// we want to call connect on the socket
 			socket.connect();
@@ -61,7 +62,6 @@
 
 	onMount(() =>{
 		// we want to call connect on the socket
-		socket.connect();
 
 		socket.on('connect', () => {
 			const setting = {
