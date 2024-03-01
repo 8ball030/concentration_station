@@ -13,6 +13,7 @@ leak_report
 
 packages/eightballer/protocols/prometheus
 packages/eightballer/protocols/http
+packages/eightballer/protocols/orders
 packages/valory/protocols/ledger_api
 packages/valory/protocols/contract_api
 packages/eightballer/protocols/default

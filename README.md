@@ -5,14 +5,56 @@ Using the Open Autonomy Framework we have developed a thought controlled tinder 
 
 Find the documentation [here](https://docs.autonolas.network).
 
-# Setup
+# Coin API
+We use the [CoinGecko API](https://www.coingecko.com/en/api) to get the current price of the coins.
 
-```bash
-git clone https://github.com/8ball030/concentration_station.git
-cd concentration_station
-poetry install
-# create a ethereum key
-aea generate-key ethereum
+# Price Routing
+
+This is handled by [0x](https://0x.org/docs) who provide a [swap API](https://0x.org/products/swap) which we can use to route the swaps.
+
+Docs for the swap API are [here](https://0x.org/docs/0x-swap-api/introduction).
+
+# Chains
+
+A number of chains are supported out of the box for the agent, based on the sponsors of EthDenver
+```
+{
+    "ethereum": {
+      "ledger_id": "ethereum",
+      "chain_id": 1,
+      "chain_name": "Ethereum",
+      "explorer_url": "https://etherscan.io/",
+      "native_currency": "ETH"
+    },
+    "arbitrum": {
+      "ledger_id": "arbitrum",
+      "chain_id": 42161,
+      "chain_name": "Arbitrum",
+      "explorer_url": "https://arbiscan.io/",
+      "native_currency": "ETH"
+    },
+    "celo": {
+      "ledger_id": "celo",
+      "chain_id": 42220,
+      "chain_name": "",
+      "explorer_url": "https://celoscan.io/",
+      "native_currency": "CELO"
+    },
+    "base": {
+      "ledger_id": "base",
+      "chain_id": 8453,
+      "chain_name": "Base",
+      "explorer_url": "https://basescan.org/",
+      "native_currency": "ETH"
+    },
+    "matic": {
+      "ledger_id": "matic",
+      "chain_id": 137,
+      "chain_name": "Matic",
+      "explorer_url": "https://polygonscan.com/",
+      "native_currency": "MATIC"
+    }
+}
 ```
 
 # Running the agent.
@@ -20,6 +62,17 @@ aea generate-key ethereum
 ```bash
 make run-agent
 ```
+
+# Setup
+
+```bash
+git clone https://github.com/8ball030/concentration_station.git
+cd concentration_station
+poetry install
+# create a ethereum key
+poetry run aea generate-key ethereum
+```
+
 
 
 # Sample requests
@@ -41,8 +94,9 @@ curl localhost:5555/transactions
 
 To submit a swipe request;
 ```bash
-curl -X POST --header "Content-Type: application/json" localhost:5000/swipe --data "{\"coin_id\": \"test\", \"direction\": \"buy\"}"
+curl -X POST --header "Content-Type: application/json" 192.168.222.31:5555/swipe --data "{\"coin_id\": \"test\", \"direction\": \"buy\", \"chain_id\": \"arbitrum\"}"
 ```
+
 
 
 ## System requirements

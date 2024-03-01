@@ -31,6 +31,7 @@ from aea.skills.base import Handler
 
 from packages.eightballer.protocols.default import DefaultMessage
 from packages.eightballer.protocols.http.message import HttpMessage
+from packages.eightballer.protocols.orders.custom_types import Order, OrderSide, OrderStatus, OrderType
 from packages.eightballer.protocols.websockets.dialogues import WebsocketsDialogue, WebsocketsDialogues
 from packages.eightballer.protocols.websockets.message import WebsocketsMessage
 from packages.eightballer.skills.balance_metrics.strategy import Balance
@@ -49,6 +50,9 @@ from packages.open_aea.protocols.signing.message import SigningMessage
 from packages.valory.connections.ledger.base import EVM_LEDGERS
 from packages.valory.connections.ledger.tests.conftest import make_ledger_api_connection
 from packages.valory.protocols.ledger_api.message import LedgerApiMessage
+from packages.eightballer.protocols.orders.message import OrdersMessage
+
+
 
 
 class EvmLedgerApis(LedgerApis):
@@ -260,47 +264,29 @@ class HttpHandler(Handler):
         :param http_msg: the http message
         :param http_dialogue: the http dialogue
         """
-        strategy = cast(Strategy, self.context.strategy)
         payload = json.loads(http_msg.body)
-        address = payload.get("public_address")
-        status_text = "Unsuccessful"
-        valid = False
-
-        ledgers = self.context.shared_state.get("ledgers")
-        native_balances = self.context.shared_state.get("balances")
 
         direction = payload.get("direction")
         coin_id = payload.get("coin_id")
-        ledger_id = payload.get("ledger_id", "ethereum")
+        ledger_id = payload.get("chain_id", "ethereum")
+        self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
 
-        strategy._current_coin = strategy.get_new_coin()
-
-
+        side = OrderSide.BUY if direction == "buy" else OrderSide.SELL
+        order = Order(
+            side=side,
+            type=OrderType.MARKET,
+            symbol=coin_id,
+            exchange_id=ledger_id,
+            amount=0.001,
+        )
+        order_msg, _ = self.context.orders_dialogues.create(
+            performative=OrdersMessage.Performative.CREATE_ORDER,
+            order=order,
+            counterparty=str("eightballer/price_router:0.1.0"),
+        )
+        self.context.send_to_skill(order_msg)
+        self.context.strategy._current_coin = self.context.strategy.get_new_coin()
         status_text = "Success!"
-            # valid = strategy.is_request_valid(address, request_ledger)
-        # if valid:
-        #     self.context.logger.info(
-        #         f"Address {address} successfully claimed. Preparing TX."
-        #     )
-
-        #     native_balance = native_balances.get(request_ledger)
-
-        #     self.context.logger.info(
-        #         f"Native balance on {request_ledger} ledger is {native_balance}"
-        #     )
-
-        #     if not isinstance(int(native_balance.amount), int):
-        #         status_text = "Pending ledger balance"
-        #     elif native_balance is None:
-        #         status_text = "Invalid ledger"
-        #     elif native_balance.amount < strategy.gwei_per_request:
-        #         status_text = "Insufficient funds in faucet"
-        #     else:
-        #         status_text = "Success! Please await transaction confirmation."
-        #         self._make_transfer(address, request_ledger)
-        # else:
-        #     status_text = "Address has already claimed today."
-            
         http_response = http_dialogue.reply(
             performative=HttpMessage.Performative.RESPONSE,
             target_message=http_msg,
@@ -312,7 +298,7 @@ class HttpHandler(Handler):
         )
         self.context.logger.info("responding with: {}".format(status_text))
         self.context.outbox.put_message(message=http_response)
-        # strategy.add_drip_request(address, valid, ledger_id=ledger_id)
+
 
     def _handle_invalid(
         self, http_msg: HttpMessage, http_dialogue: HttpDialogue
@@ -338,6 +324,15 @@ class HttpHandler(Handler):
         terms = strategy.get_drip_terms(address, ledger_id=ledger_id)
         tx_behaviour = cast(TransactionBehaviour, self.context.behaviours.transaction)
         tx_behaviour.waiting.append(terms)
+
+    def _submit_order_to_router(self, order):
+        self.context.logger.info(f"Submitting order to router: {order}")
+        strategy = cast(Strategy, self.context.strategy)
+
+        order_msg, order_dialogue = strategy.order_dialogues.create(
+            performative=OrdersMessage.Performative.ORDER,
+            order=order,
+        )
 
 
 class LedgerApiHandler(Handler):
@@ -434,10 +429,11 @@ class LedgerApiHandler(Handler):
         :param ledger_api_msg: the ledger api message
         :param ledger_api_dialogue: the ledger api dialogue
         """
+        strategy = cast(Strategy, self.context.price_routing_strategy)
+        strategy.current_tx = ledger_api_msg
+        explorer_url = self.context.shared_state['ledgers'][ledger_api_dialogue.terms.ledger_id].explorer_url
         self.context.logger.info(
-            "transaction was successfully submitted. Transaction digest={}".format(
-                ledger_api_msg.transaction_digest
-            )
+            f"View the pending transaction on {explorer_url}/tx/{ledger_api_msg.transaction_digest.body}"
         )
         ledger_api_dialogues = cast(
             LedgerApiDialogues, self.context.ledger_api_dialogues
@@ -505,10 +501,10 @@ class LedgerApiHandler(Handler):
         self.context.logger.debug("received raw transaction={}".format(ledger_api_msg))
         signing_dialogues = cast(SigningDialogues, self.context.signing_dialogues)
 
-        # we have to do a hack here because api.get_transfer_transaction()
-        # adds in data when transfering to SAFE contract.
-        # this is a hack to remove that data.
-        ledger_api_msg.raw_transaction._body["data"] = "0x"
+        # # we have to do a hack here because api.get_transfer_transaction()
+        # # adds in data when transfering to SAFE contract.
+        # # this is a hack to remove that data.
+        # ledger_api_msg.raw_transaction._body["data"] = "0x"
         ledger_api_dialogue.initial_ledger_id = ledger_api_msg.raw_transaction.ledger_id
         ledger_api_msg.raw_transaction._ledger_id = "ethereum"
         signing_msg, signing_dialogue = signing_dialogues.create(
@@ -534,17 +530,15 @@ class LedgerApiHandler(Handler):
         :param ledger_api_dialogue: the ledger api dialogue
         """
 
-        ledger = self.context.shared_state['ledgers'][ledger_api_dialogue.terms.ledger_id]
-        self.context.logger.info(
-            f"View the pending transaction on {ledger.explorer_url}/tx/{ledger_api_msg.transaction_receipt.receipt.get('transactionHash')}"
+
+        ledger_api = EvmLedgerApis.get_api(ledger_api_dialogue.terms.ledger_id)
+
+        breakpoint()
+
+        is_settled = TrueLedgerApis.is_transaction_settled(
+            ledger_api_dialogue.terms.ledger_id,
+            ledger_api_msg.transaction_receipt.receipt,
         )
-
-        # ledger_api = EvmLedgerApis.get_api(ledger_api_dialogue.terms.ledger_id)
-
-        # is_settled = TrueLedgerApis.is_transaction_settled(
-        #     ledger_api_dialogue.terms.ledger_id,
-        #     ledger_api_msg.transaction_receipt.receipt,
-        # )
         is_settled = True
         tx_behaviour = cast(TransactionBehaviour, self.context.behaviours.transaction)
         initial_ledger_api_dialogue = cast(
@@ -564,6 +558,10 @@ class LedgerApiHandler(Handler):
                     ledger_api_msg.transaction_receipt.receipt.get("transactionHash")
                 )
             )
+        ledger = self.context.shared_state['ledgers'][ledger_api_dialogue.terms.ledger_id]
+        self.context.logger.info(
+            f"View the Settled transaction on {ledger.explorer_url}/tx/{ledger_api_msg.transaction_receipt.receipt.get('transactionHash')}"
+        )
 
 
 class SigningHandler(Handler):
@@ -729,7 +727,7 @@ class WebSocketHandler(HttpHandler):
 
         :param message: the message
         """
-        self.context.logger.info(
+        self.context.logger.debug(
             "Handling disconnect message in skill: {}".format(message)
         )
         ws_dialogues_to_connections = {
@@ -786,7 +784,7 @@ class WebSocketHandler(HttpHandler):
             success=True,
             target_message=message,
         )
-        self.context.logger.info(
+        self.context.logger.debug(
             "Handling connect message in skill: {}".format(client_reference)
         )
         self.strategy.clients[client_reference] = dialogue
