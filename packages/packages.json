@@ -1,10 +1,9 @@
 {
     "dev": {
-        "skill/eightballer/concentration_api/0.1.0": "bafybeif3uuuqjuihbhksndjokowctlzpudml5jnrmceebweaszljhnos74",
-        "agent/eightballer/concentration_station/0.1.0": "bafybeihbq7w56t3gtbfrgrbwv3p2n42rde2jweqpwov3mdyxodauijceby",
-        "skill/eightballer/price_router/0.1.0": "bafybeieblmkv7b4do33ywtnz42ilnyivb2g6fwcf6k72lmz7efpfs4fy2a"
-    },
-    "third_party": {
+        "skill/eightballer/concentration_api/0.1.0": "bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq",
+        "agent/eightballer/concentration_station/0.1.0": "bafybeifbfm4ckblrdyt2citcavwjsnsbcwnpaaftsfuwpgqgu5yimqauja",
+        "skill/eightballer/price_router/0.1.0": "bafybeidynxvj5pev26dmadb6auuo54rmbhedpzuntxocxmokzwfhysi5aq",
+        "service/eightballer/speculation_station/0.1.0": "bafybeidlgiywusxu7ftwdzkcz6bcsrpry5yokbhx4swug4lcfg6hxahhga",
         "protocol/eightballer/prometheus/1.0.0": "bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq",
         "protocol/eightballer/orders/0.1.0": "bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y",
         "protocol/eightballer/http/0.1.0": "bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a",
@@ -22,5 +21,6 @@
         "skill/eightballer/balance_metrics/0.1.0": "bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly",
         "protocol/eightballer/websockets/0.1.0": "bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e",
         "connection/eightballer/websocket_server/0.1.0": "bafybeibddsrpnopa6j5ldedqtd5yzqphrzr665asqcakmawr5djq6ktycy"
-    }
+    },
+    "third_party": {}
 }

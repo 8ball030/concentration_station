@@ -281,6 +281,8 @@ class HttpHandler(Handler):
             SwipeSide.LEFT.name: OrderSide.SELL
         }
 
+        breakpoint()
+
         side = swipe_to_intent[direction]
         self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
         order = Order(

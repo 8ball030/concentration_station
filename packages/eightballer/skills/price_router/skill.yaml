@@ -22,7 +22,7 @@ protocols:
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - eightballer/orders:0.1.0:bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y
 skills:
-- eightballer/concentration_api:0.1.0:bafybeif3uuuqjuihbhksndjokowctlzpudml5jnrmceebweaszljhnos74
+- eightballer/concentration_api:0.1.0:bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq
 behaviours:
   price_routing_behaviour:
     class_name: TransactionPreparationBehaviour

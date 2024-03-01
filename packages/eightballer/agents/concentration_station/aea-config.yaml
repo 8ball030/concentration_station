@@ -26,8 +26,8 @@ protocols:
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
 skills:
 - eightballer/balance_metrics:0.1.0:bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly
-- eightballer/concentration_api:0.1.0:bafybeif3uuuqjuihbhksndjokowctlzpudml5jnrmceebweaszljhnos74
-- eightballer/price_router:0.1.0:bafybeieblmkv7b4do33ywtnz42ilnyivb2g6fwcf6k72lmz7efpfs4fy2a
+- eightballer/concentration_api:0.1.0:bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq
+- eightballer/price_router:0.1.0:bafybeidynxvj5pev26dmadb6auuo54rmbhedpzuntxocxmokzwfhysi5aq
 - eightballer/prometheus:0.1.0:bafybeif4evjhwa3ac5bdojqs2gi7pvr6evnnwml2gsopktdnc6fx3vr5tu
 default_ledger: ethereum
 required_ledgers:
