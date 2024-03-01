@@ -5,10 +5,10 @@
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
-	import {state} from '$lib/stores'
+	import {state, mode} from '$lib/stores'
 	import { LikedCoins } from '$lib/likedCoins';
 	import {getCurrentCoin, getLedgers, postSwap} from '$lib/actions';
-	import {SOCKET_URL, INTENTION_DIRECTIONS} from '$lib/consts'
+	import {SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE} from '$lib/consts'
     import {transactionLink} from '$lib/stores'
 
 	const socket = io(SOCKET_URL, {});
@@ -42,6 +42,15 @@
 		explorerLink = value;
 	});
 
+	$: mode.subscribe((value) => {
+		if (value === APP_MODE.DEGEN) {
+			// we want to call connect on the socket
+			socket.connect();
+		} else {
+			socket.disconnect();
+		}
+	});
+
 	onMount(() =>{
 		// we want to call connect on the socket
 		socket.connect();
@@ -67,6 +76,7 @@
 			toastStore.trigger(setting)
 		});
 
+		
 		socket.on('data', (data) => {
 			if (!handling && coin?.id) {
 				handleIntention(data?.intention);
@@ -78,7 +88,7 @@
 		cardList = value;
 	});
 
-	function updateActiveCard() {
+	function updateActiveCard(intentionDirection) {
 		outMoveDirection = MOVE_DIRECTION[intentionDirection];
 		cardList = [...cardList.slice(1), Math.max(...cardList) + 1];
 		handling = false
@@ -104,7 +114,7 @@
 		if (res) {
 			getCoin()
 			toastStore.trigger(succssesToast);
-			updateActiveCard()
+			updateActiveCard(intentionDirection)
 		} else {
 			handling = false
 		}

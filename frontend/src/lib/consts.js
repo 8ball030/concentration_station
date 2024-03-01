@@ -4,10 +4,6 @@ export const APP_MODE = {
     DEGEN: 'degen'
 }
 
-export const BASE_URL = 'http://192.168.222.31:5555'
-export const SOCKET_URL = 'http://192.168.222.31:5556'
-export const DEFAULT_CHAIN = 1;
-
 export const INTENTION_DIRECTIONS = {
     DISLIKE: 'LEFT',
     LIKE: 'RIGHT'
@@ -16,8 +12,22 @@ export const MOVE_DIRECTION = {
     LEFT: -400,
     RIGHT: 400
 }
-export const CHAINS = {
+export const CHAIN_MODE = {
     MAINNET: 1,
-    GNOSIS: 100,
-    POLYGON: 137
+    MATIC: 137,
+    CELO: 42220,
+    ARBITRUM: 42161,
+    BASE: 8453
 }
+
+export const CHAIN_NAME = {
+    1: 'Ethereum',
+    137: 'Matic',
+    42220: 'Celo',
+    42161: 'Arbitrum',
+    8453: 'Base'
+}
+
+export const BASE_URL = 'http://192.168.222.31:5555'
+export const SOCKET_URL = 'http://192.168.222.31:5556'
+export const DEFAULT_CHAIN = CHAIN_MODE.MAINNET
