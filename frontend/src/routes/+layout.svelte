@@ -40,7 +40,7 @@
 						href={`/`}
 						rel="noreferrer"
 					>
-					Concentration Station
+					Speculation Station
 				</a>
 					
 				</strong>

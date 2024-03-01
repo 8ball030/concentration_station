@@ -1,50 +1,58 @@
 <script>
-// @ts-nocheck
+	// @ts-nocheck
 	import { onMount } from "svelte";
-	import { fly } from 'svelte/transition'
-	import { quintOut } from 'svelte/easing';
-	import { ProgressBar } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { ProgressBar, getToastStore } from '@skeletonlabs/skeleton';
 	import io from 'socket.io-client';
 
-	import TransactionFrame from '$lib/components/TransactionFrame.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import {state} from '$lib/stores'
+	import { LikedCoins } from '$lib/likedCoins';
 	import {getCurrentCoin, getLedgers, postSwap} from '$lib/actions';
-	import {SOCKET_URL, DEFAULT_CHAIN, INTENTION_DIRECTIONS} from '$lib/consts'
-	import {mockCoin} from '$lib/mock'
-	
+	import {SOCKET_URL, INTENTION_DIRECTIONS} from '$lib/consts'
+    import {transactionLink} from '$lib/stores'
+
 	const socket = io(SOCKET_URL, {});
 	
 	$: connection_status = socket.connected;
 
-	// transaciton modal
-	const modalStore = getModalStore();
-    const modalComponent = { ref: TransactionFrame };
-
-    const modal = {
-        type: 'component',
-        component: modalComponent,
-    };
-
-	let cardDummyList = [0]
-	let index = 0
 	let coin = {}
-  	let animate = false
+	let cardList = [0]
+    let explorerLink = ''
+	const likedCoinsList = new LikedCoins();
+
+	// states
 	let loading = false
+	let handling = false;
+	$:outMoveDirection = 0;
+
+	const toastStore = getToastStore();
+	const succssesToast = {
+		message: `👍🏼 Transaction hash <br/> 0x20d0fda3b4bfbac76ed7d9fe9f6b669b50ad3e94d6a1bacc047584afe9f7ef53`,
+		action: {
+			label: 'See on Exlorer',
+			response: () => window.open(explorerLink, '_blank').focus()
+		},
+		timeout: 1000,
+		background: 'variant-filled-success',
+		button: 'variant-ghost-success',
+		classes: 'success-toast'
+	};
+
+	transactionLink.subscribe((value) => {
+		explorerLink = value;
+	});
 
 	onMount(() =>{
 		// we want to call connect on the socket
 		socket.connect();
 
 		socket.on('connect', () => {
-			console.log('Successfully connected to the agent!')
 			const setting = {
 				message: 'Successfully connected to the agent!',
 				timeout: 3000,
 				background: 'variant-ghost-success'
 			};
-
+			toastStore.trigger(setting)
 			connection_status = true;
 			socket.emit('agent', 'agent');
 		});
@@ -56,88 +64,77 @@
 				timeout: 3000,
 				background: 'variant-ghost-error'
 			};
+			toastStore.trigger(setting)
 		});
 
 		socket.on('data', (data) => {
-			console.log('intention', data)
-			
-			//handleIntention(data?.intention);
+			if (!handling && coin?.id) {
+				handleIntention(data?.intention);
+			}
 		});
 	})
 
 	state.subscribe((value) => {
-		cardDummyList = value;
+		cardList = value;
 	});
 
-
 	function updateActiveCard() {
-		cardDummyList = [...cardDummyList.slice(1), Math.max(...cardDummyList) + 1];
-		index +=1
+		outMoveDirection = MOVE_DIRECTION[intentionDirection];
+		cardList = [...cardList.slice(1), Math.max(...cardList) + 1];
+		handling = false
+	}
+
+	function handleUpdateLiked(intentionDirection) {
+		if (intentionDirection === INTENTION_DIRECTIONS.DISLIKE) {
+			likedCoinsList.remove(coin);
+		} else {
+			likedCoinsList.add(coin);
+		}
 	}
 
 	// when we get intention from socket submit a swap on liked ( 'right' ) 
 	async function handleIntention(intentionDirection) {
+		handleUpdateLiked()
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
-		if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
-			loading = true
+		loading = true
+		handling = true
 
-			const res = await postSwap(coin.id, DEFAULT_CHAIN)
-			if (res) {
-				getCoin()
-				handleSwapPosted()
-			}
-			loading = false
-		} else {
+		const res = await postSwap(coin.id, intentionDirection, handleApiError)
+
+		if (res) {
+			getCoin()
+			toastStore.trigger(succssesToast);
 			updateActiveCard()
+		} else {
+			handling = false
 		}
-	}
-
-	function handleSwapPosted() {
-		modalStore.trigger(modal);
-		animate = true
-		updateActiveCard()
-
-		setTimeout(() => {
-			animate = false
-			modalStore.close();
-		}, 1000)
-	}
-
-	function setCoin(func){
-		func()
+		loading = false
 	}
 
 	async function getCoin(){
-		coin = await getCurrentCoin()
+		coin = await getCurrentCoin(handleApiError)
 	}
-
+	
+	function handleApiError(endpoint, err){
+		const errorToast = {
+			message: ` =( ${err} ${endpoint}`,
+			background: 'variant-filled-error',
+			classes: 'error-toast'
+		};
+		toastStore.trigger(errorToast);
+	}
+	
 	onMount(() => {
-		// getLedgers()
 		getCoin()
 	});
 </script>
 
-<div class="success">
-	{#if animate}
-		<div
-			transition:fly={
-				{ 
-					delay: 0,
-					duration: 100,
-					x: -50,
-					y: 200,
-					opacity: 0.5,
-					easing: quintOut 
-				}
-			}
-			>
-			👍🏼 
-		</div>
-	{/if}
-</div>
 <div class="stack grid place-items-center mt-40">
-	{#each cardDummyList as dummy (dummy)}
-		<Card coin={coin} onbuttonTapped={handleIntention} />
+	{#each cardList as dummy (dummy)}
+		<Card
+			coin={coin}
+			outMoveDirection={outMoveDirection}
+			onbuttonTapped={handleIntention} />
 	{/each}
 	{#if loading}
 		<div class="w-96">
@@ -147,11 +144,4 @@
 </div>
 
 <style>
-	.success {
-		padding-top: 35px;
-		height: 100px;
-		width: 100%;
-		z-index: 1000;
-		text-align: center;
-	}
-  </style>
+</style>
