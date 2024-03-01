@@ -119,6 +119,7 @@ class OrdersHandler(Handler):
             raw_tx = self.context.price_routing_strategy.prepared_transactions[order.exchange_id][order.side.name]
         except KeyError:
             self.context.logger.error("No prepared transaction available for the given order!")
+
             return
         self.send_raw_tx(raw_tx, orders_message.order)
 

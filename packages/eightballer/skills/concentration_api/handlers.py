@@ -124,7 +124,7 @@ class HttpHandler(Handler):
         :param http_msg: the http message
         :param http_dialogue: the http dialogue
         """
-        self.context.logger.info(
+        self.context.logger.debug(
             "received http request with method={}, url={} and body={!r}".format(
                 http_msg.method,
                 http_msg.url,
@@ -268,7 +268,7 @@ class HttpHandler(Handler):
 
         direction = payload.get("direction")
         coin_id = payload.get("coin_id")
-        ledger_id = payload.get("chain_id", "ethereum")
+        ledger_id = payload.get("ledger_id", "ethereum")
         self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
 
         side = OrderSide.BUY if direction == "buy" else OrderSide.SELL

@@ -6,8 +6,8 @@
 	export let onbuttonTapped;
 	export let coin;
 	export let outMoveDirection;
+	export let chainId;
 </script>
-
 	<div
 		class="card w-96 bg-base-200 shadow-xl items-center"
 		in:scale|global={{ delay: 200, duration: 300 }}
@@ -43,7 +43,7 @@
 			<button
 				class="btn btn-outline btn-primary btn-lg"
 				on:click={() => {
-					onbuttonTapped(INTENTION_DIRECTIONS.DISLIKE, coin);
+					onbuttonTapped(INTENTION_DIRECTIONS.DISLIKE, coin, chainId);
 				}}
 			>
 				💔
@@ -51,7 +51,7 @@
 			<button
 				class="btn btn-outline btn-secondary btn-lg"
 				on:click={async () => {
-					onbuttonTapped(INTENTION_DIRECTIONS.LIKE, coin);
+					onbuttonTapped(INTENTION_DIRECTIONS.LIKE, coin, chainId);
 				}}
 			>
 				❤️

@@ -78,14 +78,14 @@ public_id: eightballer/http_server:0.1.0:bafybeia6shz5vnl5j7chaymvetrdrczdnca4hu
 type: connection
 config:
   host: 0.0.0.0
-  port: 5555
+  port: 5553
   target_skill_id: eightballer/concentration_api:0.1.0
 ---
 public_id: eightballer/websocket_server:0.1.0:bafybeiewepahfzsb4hlzdfomaeoinrrcdufsjlfsgjuox637gwjfneoxhu
 type: connection
 config:
   target_skill_id: eightballer/concentration_api:0.1.0
-  port: 5556
+  port: 5554
   host: 0.0.0.0
 ---
 public_id: eightballer/price_router:0.1.0:bafybeie24q5y2jbarpfip5k63hzxdt7prywdcglskyo5jep7ec7ap33gzy
@@ -96,7 +96,15 @@ models:
       ledger_ids:
       - arbitrum
       token_ids:
-      - '0x0001A500A6B18995B03f44bb040A5fFc28E45CB0'
+      - 'edu-coin'
+      - 'palm-ai'
+      - 'grape-2-2'
+      - 'decubate'
+      - 'botto'
+      - 'pepe'
+      - 'solana'
+      - 'dogwifcoin'
+      - 'bonk'
       base_currency: DAI
       api_routers:
       - name: 0x
