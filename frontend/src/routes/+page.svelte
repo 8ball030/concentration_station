@@ -19,11 +19,14 @@
 	let coin = {}
 	let cardList = [0]
     let explorerLink = ''
+
 	const likedCoinsList = new LikedCoins();
 
 	// states
 	let loading = false
 	let handling = false;
+	
+	$: modeValue = ""
 	$:outMoveDirection = 0;
 
 	const toastStore = getToastStore();
@@ -36,7 +39,8 @@
 		timeout: 1000,
 		background: 'variant-filled-success',
 		button: 'variant-ghost-success',
-		classes: 'success-toast'
+		classes: 'success-toast',
+		max: 1
 	};
 
 	transactionLink.subscribe((value) => {
@@ -44,9 +48,8 @@
 	});
 
 	$: mode.subscribe((value) => {
-		console.log('mode', value)
-		if (value === APP_MODE.DEGEN) {
-			// we want to call connect on the socket
+		modeValue = value;
+		if (value === APP_MODE.DEGEN || value === APP_MODE.AGENT) {
 			socket.connect();
 		} else {
 			socket.disconnect();
@@ -57,21 +60,16 @@
 		chain_id = value;
 	});
 
-	
-
-
 	onMount(() =>{
-		// we want to call connect on the socket
-
 		socket.on('connect', () => {
 			const setting = {
 				message: 'Successfully connected to the agent!',
 				timeout: 3000,
-				background: 'variant-ghost-success'
+				background: 'variant-ghost-success',
+				max: 1
 			};
 			toastStore.trigger(setting)
 			connection_status = true;
-			socket.emit('agent', 'agent');
 		});
 
 		socket.on('disconnect', () => {
@@ -79,15 +77,32 @@
 			const setting = {
 				message: 'Disconnected from the agent!',
 				timeout: 3000,
-				background: 'variant-ghost-error'
+				background: 'variant-ghost-error',
+				max: 1
 			};
 			toastStore.trigger(setting)
 		});
-
 		
 		socket.on('data', (data) => {
-			if (!handling && coin?.id) {
-				handleIntention(data?.intention);
+
+			if (APP_MODE.DEGEN === modeValue) {
+				if (!handling && coin?.id) {
+
+					const intention = JSON.parse(data).intention;
+					const row = coin?.id + " " + intention;
+					const intentToast = {
+						message: "🔮 " + row + " 🔮",
+						timeout: 2500,
+						background: 'variant-ghost-info',
+						classes: 'info-toast',
+						position: 't',
+						max: 1
+
+					};
+					toastStore.trigger(intentToast);
+					updateActiveCard(intention);
+					handleIntention(intention);
+				}
 			}
 		});
 	})
@@ -97,8 +112,14 @@
 	});
 
 	function updateActiveCard(intentionDirection) {
+		console.log('updateActiveCard', intentionDirection)
 		outMoveDirection = MOVE_DIRECTION[intentionDirection];
-		cardList = [...cardList.slice(1), Math.max(...cardList) + 1];
+		if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
+			cardList = [cardList.slice(1)];
+		} else {
+			cardList = [cardList.slice(1)];
+		}
+
 		handling = false
 	}
 
@@ -116,13 +137,22 @@
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true
 		handling = true
-
 		const res = await postSwap(coin.id, intentionDirection, chain_id, handleApiError)
 
 		if (res) {
 			getCoin()
-			toastStore.trigger(succssesToast);
 			updateActiveCard(intentionDirection)
+			
+			if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
+				const submittedToast = {
+					message: `🤞🏼 Transaction submitted 🤞🏼`,
+					timeout: 1000,
+					max: 1
+				};
+				toastStore.trigger(submittedToast);
+				// TODO: some check here with a callback to get the transaction hash
+				toastStore.trigger(succssesToast);
+			}
 		} else {
 			handling = false
 		}
@@ -151,6 +181,7 @@
 	{#each cardList as dummy (dummy)}
 		<Card
 			coin={coin}
+			chainId={chain_id}
 			outMoveDirection={outMoveDirection}
 			onbuttonTapped={handleIntention} />
 	{/each}
