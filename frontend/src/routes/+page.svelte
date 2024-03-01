@@ -5,7 +5,7 @@
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
-	import {state, mode} from '$lib/stores'
+	import {state, mode, chain} from '$lib/stores'
 	import { LikedCoins } from '$lib/likedCoins';
 	import {getCurrentCoin, getLedgers, postSwap} from '$lib/actions';
 	import {SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE} from '$lib/consts'
@@ -15,6 +15,7 @@
 	
 	$: connection_status = socket.connected;
 
+	let chain_id;
 	let coin = {}
 	let cardList = [0]
     let explorerLink = ''
@@ -50,6 +51,13 @@
 			socket.disconnect();
 		}
 	});
+
+	$: chain.subscribe((value) => {
+		chain_id = value;
+	});
+
+	
+
 
 	onMount(() =>{
 		// we want to call connect on the socket
@@ -109,7 +117,7 @@
 		loading = true
 		handling = true
 
-		const res = await postSwap(coin.id, intentionDirection, handleApiError)
+		const res = await postSwap(coin.id, intentionDirection, chain_id, handleApiError)
 
 		if (res) {
 			getCoin()

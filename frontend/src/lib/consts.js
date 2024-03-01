@@ -1,7 +1,7 @@
 export const APP_MODE = {
-    NORMAL: 'normal',
-    AGENT: 'agent',
-    DEGEN: 'degen'
+    NORMAL: 'Normal',
+    AGENT: 'Agent',
+    DEGEN: 'Degen'
 }
 
 export const INTENTION_DIRECTIONS = {
@@ -30,4 +30,4 @@ export const CHAIN_NAME = {
 
 export const BASE_URL = 'http://192.168.222.31:5555'
 export const SOCKET_URL = 'http://192.168.222.31:5556'
-export const DEFAULT_CHAIN = CHAIN_MODE.MAINNET
+export const DEFAULT_CHAIN = CHAIN_MODE.ARBITRUM

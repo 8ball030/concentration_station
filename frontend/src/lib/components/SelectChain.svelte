@@ -17,7 +17,7 @@
     chain.set(CHAIN_MODE.ARBITRUM)
 
     chain.subscribe((value) => {
-        console.log(value)
+        selectedChain = value
     })
 
 // TODO: add mode descriptions
@@ -29,7 +29,7 @@
         <dl class="list-dl select-list bg-surface-100-800-token">
             <div>
                 <div on:click={() => selectMode(CHAIN_MODE.MAINNET)} class="flex-auto">
-                    <dt>Ethereum Mainet</dt>
+                    <dt>Ethereum</dt>
                 </div>
             </div>
             <div>
