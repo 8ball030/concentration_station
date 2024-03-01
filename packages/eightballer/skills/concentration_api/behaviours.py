@@ -19,6 +19,7 @@
 
 """This package contains the behaviour for the erc-1155 client skill."""
 
+from datetime import datetime
 import json
 import random
 from typing import Any, List, Optional, Set, cast
@@ -38,7 +39,7 @@ from packages.valory.connections.ledger.connection import (
 from packages.valory.protocols.ledger_api.message import LedgerApiMessage
 
 LEDGER_API_ADDRESS = str(LEDGER_CONNECTION_PUBLIC_ID)
-DEFAULT_MAX_PROCESSING = 120
+DEFAULT_MAX_PROCESSING = 20.0
 DEFAULT_TX_INTERVAL = 2.0
 
 
@@ -68,6 +69,7 @@ class TransactionBehaviour(TickerBehaviour):
             if self.processing_time <= self.max_processing:
                 # already processing
                 self.processing_time += self.tick_interval
+                self.check_processing()
                 return
             self._timeout_processing()
         if len(self.waiting) == 0:
@@ -82,9 +84,21 @@ class TransactionBehaviour(TickerBehaviour):
         """Timeout processing."""
         if self.processing is None:
             return
+        self.context.logger.warning(
+            f"Transaction processing timeout assuming failed: {self.processing.dialogue_label}"
+        )
         self.timedout.add(self.processing.dialogue_label)
         self.processing_time = 0.0
         self.processing = None
+
+    def check_processing(self) -> None:
+        """Check processing."""
+        # we submit the ledger api message and check if it has been processed
+        msg = self.context.price_routing_strategy.current_tx
+        if msg is None:
+            return
+        self.context.send_to_skill(msg)
+
 
     def finish_processing(self, ledger_api_dialogue: LedgerApiDialogue) -> None:
         """
@@ -92,19 +106,22 @@ class TransactionBehaviour(TickerBehaviour):
 
         :param ledger_api_dialogue: the ledger api dialogue
         """
-        if self.processing == ledger_api_dialogue:
+
+        response = ledger_api_dialogue.initial_ledger_api_dialogue
+
+        if self.processing == response:
             self.processing_time = 0.0
             self.processing = None
             return
+        
+        # we check if the dialogue is 
+        
         if ledger_api_dialogue.dialogue_label not in self.timedout:
-            raise ValueError(
-                f"Non-matching dialogues in transaction behaviour: {self.processing} and {ledger_api_dialogue}"
-            )
+            return
         self.timedout.remove(ledger_api_dialogue.dialogue_label)
         self.context.logger.debug(
             f"Timeout dialogue in transaction processing: {ledger_api_dialogue}"
         )
-        # don't reset, as another might be processing
 
     def _start_processing(self) -> None:
         """Process the next transaction."""
@@ -243,3 +260,6 @@ class SignalBehaviour(TickerBehaviour):
             data=data,
         )
         self.context.outbox.put_message(message=msg)
+
+    def __init__(self, tick_interval: float = 5, start_at: datetime | None = None, **kwargs: Any) -> None:
+        super().__init__(tick_interval, start_at, **kwargs)

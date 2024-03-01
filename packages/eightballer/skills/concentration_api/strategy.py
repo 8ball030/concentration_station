@@ -45,6 +45,7 @@ class Strategy(Model):  # pylint: disable=too-many-instance-attributes
     clients = {}
 
     current_coin = {}
+    pending_orders = {}
 
     @property
     def balance(self) -> int:
@@ -60,6 +61,7 @@ class Strategy(Model):  # pylint: disable=too-many-instance-attributes
     def current_coin(self) -> str:
         """Get the current coin."""
         return self._current_coin
+    
 
     def __init__(self, **kwargs: Any) -> None:
         """

@@ -9,27 +9,28 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
-  behaviours.py: bafybeihwlhpbtl37jmztebajorw5ya7oiwp5fxs3jywariesofgzsfdokm
-  dialogues.py: bafybeifi6krrehxvoxkoudpsiqf5i2z5msmofvojpthplzinywmhcgaqt4
-  handlers.py: bafybeiaobzmqkl5pnngkygktbv7mjq5xvnpjg4y464yigkpwzcnlljr3wu
+  behaviours.py: bafybeib7o3wdj42hke6roxx4dnghxo5dodcfzxdrgc7s3iyads67mz2m6m
+  dialogues.py: bafybeicudhrj5acixtwcsnixcsi325a7p2n3eptq2pc2mfnqabbbggwqym
+  handlers.py: bafybeibm5ndt7l7aku3cvpcqbcytin3z7cnlexxvtrhosl33puudtjnumi
   models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
   open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
-  strategy.py: bafybeihcj23rpw4y3boozsddbyxzgr6lovxqencb6jrakngwanm3l2sec4
+  strategy.py: bafybeifyajgaa7goyjpc6jaiako23c6d5wcd5oqzqahnbxgkg4xtvdqeqq
   tests/test_base.py: bafybeifdxtgkxo7shk5apcwtfp6nbf6ik274cnbfmhnmiel3kqo2ok7iqa
 fingerprint_ignore_patterns: []
 connections:
-- valory/ledger:0.19.0:bafybeicm5etjfdjel3kl32rlvc5ybbbrtclkslqahvemgluevmef77wkbq
+- valory/ledger:0.19.0:bafybeiecj7qddoorvzda7kj5izvlqlj7omrjlnzgpw4eyg6crtzkadqkwa
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
 - eightballer/fipa:0.1.0:bafybeief7f7xh6lgqiqtk333jwdec7occpvlalankbwvrhndxupt44brja
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - eightballer/websockets:0.1.0:bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e
+- eightballer/orders:0.1.0:bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
 skills:
-- eightballer/balance_metrics:0.1.0:bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy
+- eightballer/balance_metrics:0.1.0:bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly
 behaviours:
   balance_check:
     args: {}
@@ -72,6 +73,9 @@ models:
   websocket_dialogues:
     args: {}
     class_name: WebSocketDialogues
+  orders_dialogues:
+    args: {}
+    class_name: OrdersDialogues
   strategy:
     args:
       allow_list: []
@@ -79,6 +83,7 @@ models:
       database_uri_string: sqlite:///faucet_requests.db
       gwei_per_request: 1
       max_requests_per_day: 1
+      price_router: eightballer/price_router:0.1.0
     class_name: Strategy
 dependencies:
   openapi-core:

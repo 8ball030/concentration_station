@@ -75,8 +75,19 @@ from packages.eightballer.protocols.websockets.dialogues import (
 )
 
 
+from packages.eightballer.protocols.orders.dialogues import (
+    OrdersDialogue as BaseOrdersDialogue,
+)
+from packages.eightballer.protocols.orders.dialogues import (
+    OrdersDialogues as BaseOrdersDialogues,
+)
+
+
 HttpDialogue = BaseHttpDialogue
 
+
+OrdersDialogue = BaseOrdersDialogue
+OrdersDialogues = BaseOrdersDialogues
 
 class HttpDialogues(Model, BaseHttpDialogues):
     """The dialogues class keeps track of all dialogues."""
