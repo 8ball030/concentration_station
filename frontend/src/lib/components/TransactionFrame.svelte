@@ -20,7 +20,7 @@
         </div>
         <div>
             <span class="flex-auto">
-                <dt class="text-primary-900 font-bold">Transaction Hash</dt>
+                <dt class="text-primary-900 font-bold text-md">Transaction Hash</dt>
                 <dd>0x20d0fda3b4bfbac76ed7d9fe9f6b669b50ad3e94d6a1bacc047584afe9f7ef53</dd>
             </span>
         </div>

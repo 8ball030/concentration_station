@@ -2,55 +2,79 @@ import {BASE_URL} from '$lib/consts'
 
 /**
  * @param {string} endpoinName
+ * @param {any} handleError
  */
-async function getRequest(endpoinName) {
-    const response = await fetch(`${BASE_URL}${endpoinName}`);
-
-    if (response.ok) {
-        const data  = await response.json();
-        return data;
-    }
-
-    throw new Error(`${endpoinName} network response was not ok.`);
+async function getRequest(endpoinName, handleError) {
+    try {
+        const response = await fetch(`${BASE_URL}${endpoinName}`);
+        if (response.ok) {
+            const data  = await response.json();
+            return data;
+        } else {
+            throw new Error(`${endpoinName} network response was not ok.`);
+        }
+    } catch (err) {
+        handleError(endpoinName, err)
+        return err
+    } 
 }
 /**
  * @param {string} endpoinName
  * @param {any} body
+ * @param {any} handleError
  */
-async function postRequest(endpoinName, body) {
-    const response = await fetch(`${BASE_URL}${endpoinName}`, body);
-    console.log("response", response)
-    if (response.ok) {
-        const data  = await response.json();
-        return data;
-    }
+async function postRequest(endpoinName, body, handleError) {
+    try {
+        const response = await fetch(`${BASE_URL}${endpoinName}`, body);
 
-    throw new Error(`${endpoinName} network response was not ok.`);
+        if (response.ok) {
+            const data  = await response.json();
+            return data;
+        } else {
+            throw new Error(`${endpoinName} network response was not ok.`);
+        }
+    } catch (err) {
+        handleError(endpoinName, err)
+        return err
+    } 
 }
 
-export async function getCurrentCoin(){
+/**
+ * @param {any} handleApiError
+ */
+export async function getCurrentCoin(handleApiError){
     const COIN_ENDPOINT = `/current_coin`;
-    const response = await getRequest(COIN_ENDPOINT);
+    const response = await getRequest(COIN_ENDPOINT, handleApiError);
+
+    console.log("response", response)
     return response
 };
 
-export async function getTransactions(){
+/**
+ * @param {any} handleApiError
+ */
+export async function getTransactions(handleApiError){
     const TRANSACTIONS_ENPOINT = `/transactions`;
-    const response = await getRequest(TRANSACTIONS_ENPOINT);
+    const response = await getRequest(TRANSACTIONS_ENPOINT, handleApiError);
+
     return response
 };
 
-export async function getLedgers(){
+/**
+ * @param {any} handleApiError
+ */
+export async function getLedgers(handleApiError){
     const LEDGERS_ENPOINT = `/ledgers`;
-    const response = await getRequest(LEDGERS_ENPOINT);
+    const response = await getRequest(LEDGERS_ENPOINT, handleApiError);
     return response.ledgers
 };
 
 /**
  * @param {string} coin_id
  * @param {string} direction
+ * @param {any} [handleApiError]
  */
-export async function postSwap(coin_id, direction){
+export async function postSwap(coin_id, direction, handleApiError){
     const SWAP_ENDPOINT = `/swipe`;
     const body = {
         method: "POST",
@@ -60,6 +84,6 @@ export async function postSwap(coin_id, direction){
         }),
     };
 
-    const response = await postRequest(SWAP_ENDPOINT, body);
+    const response = await postRequest(SWAP_ENDPOINT, body, handleApiError);
     return response
 };

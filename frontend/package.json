@@ -43,6 +43,7 @@
     "@web3modal/wagmi": "^3.0.0-beta.4",
     "ethers": "^6.11.1",
     "highlight.js": "11.9.0",
+    "postcss-nesting": "^12.0.4",
     "socket.io-client": "^4.7.4",
     "svelte-lazy": "^1.2.7"
   },
