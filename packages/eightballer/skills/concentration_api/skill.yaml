@@ -9,12 +9,12 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
-  behaviours.py: bafybeighfo247lj6ervsbmhz6ki3wtjd5n4xkq6k7qy3ed24gepeocef2u
+  behaviours.py: bafybeihwlhpbtl37jmztebajorw5ya7oiwp5fxs3jywariesofgzsfdokm
   dialogues.py: bafybeifi6krrehxvoxkoudpsiqf5i2z5msmofvojpthplzinywmhcgaqt4
-  handlers.py: bafybeicq6ntjppnyarsds3ylhzg6tcf7uigfmnyq3zueqfs2axtayxljrq
+  handlers.py: bafybeiaobzmqkl5pnngkygktbv7mjq5xvnpjg4y464yigkpwzcnlljr3wu
   models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
   open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
-  strategy.py: bafybeic3jcfyswdeb3uixnl44rybosdmq64xdsrbzrn5j2k4bvmxv7x3ce
+  strategy.py: bafybeihcj23rpw4y3boozsddbyxzgr6lovxqencb6jrakngwanm3l2sec4
   tests/test_base.py: bafybeifdxtgkxo7shk5apcwtfp6nbf6ik274cnbfmhnmiel3kqo2ok7iqa
 fingerprint_ignore_patterns: []
 connections:

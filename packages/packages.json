@@ -1,7 +1,7 @@
 {
     "dev": {
-        "skill/eightballer/concentration_api/0.1.0": "bafybeic7cebdis5spzu4pgw4rmcmy4thq2tjlisg5zl56ntbz6rmthnokm",
-        "agent/eightballer/concentration_station/0.1.0": "bafybeievsvn7nekxbh5oxv3iegmznphp3hbqimhlr7l2inz7dpyry3wzau"
+        "skill/eightballer/concentration_api/0.1.0": "bafybeifywdb6nyvb4w3czeoh3cfhgfvuc7oirruze7zjsp7773gclyx4g4",
+        "agent/eightballer/concentration_station/0.1.0": "bafybeicibtxizrnhm62trswa4mhaamtqx2rk3m2kgxckzj7yiat3ns37v4"
     },
     "third_party": {
         "protocol/eightballer/prometheus/1.0.0": "bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq",
