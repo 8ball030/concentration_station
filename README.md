@@ -57,23 +57,21 @@ A number of chains are supported out of the box for the agent, based on the spon
 }
 ```
 
-# Running the agent.
-
-```bash
-make run-agent
-```
-
 # Setup
 
 ```bash
 git clone https://github.com/8ball030/concentration_station.git
 cd concentration_station
-poetry install
+poetry install && poetry run autonomy packages sync
 # create a ethereum key
 poetry run aea generate-key ethereum
 ```
 
+# Running the agent.
 
+```bash
+make run-agent
+```
 
 # Sample requests
 The api for agent is available at `http://localhost:5555' and the following are the sample requests.
@@ -94,7 +92,7 @@ curl localhost:5555/transactions
 
 To submit a swipe request;
 ```bash
-curl -X POST --header "Content-Type: application/json" 192.168.222.31:5555/swipe --data "{\"coin_id\": \"test\", \"direction\": \"buy\", \"chain_id\": \"arbitrum\"}"
+curl -X POST --header "Content-Type: application/json" localhost:5553/swipe --data "{\"coin_id\": \"test\", \"direction\": \"LEFT\", \"ledger_id\": \"ethereum\"}"
 ```
 
 
