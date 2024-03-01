@@ -43,25 +43,31 @@ TransactionBehaviour = BaseTransactionBehaviour
 DEFAULT_BUY_AMOUNT = 100000
 DEFAULT_SELL_AMOUNT = 100000
 
+BACK_OFF_TIME = 60
 
 CHAIN_ID_TO_BASE_CURRENCY = {
     1: "0x6b175474e89094c44da98b954eedeac495271d0f",
-    42161: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    42161: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 }
 
 CHAIN_ID_TO_TOKENS = {
     1: {
+        "solana": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        "bonk": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        "pepe": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
     },
     42161: {
-        "edu-coin": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "palm-ai": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "grape-2-2": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "decubate": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "botto": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "pepe": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "solana": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "dogwifcoin": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "bonk": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "edu-coin": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "palm-ai": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "grape-2-2": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "decubate": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "botto": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "pepe": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "solana": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        "bonk": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        "pepe": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        # "dogwifcoin": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        # "bonk": "0x6b175474e89094c44da98b954eedeac495271d0f",
     },
 }
 
@@ -83,10 +89,16 @@ class TransactionPreparationBehaviour(TickerBehaviour):
 
     def act(self) -> None:
         """Implement the act."""
+        if self.strategy.rate_limited:
+            if (datetime.now() - self.strategy.rate_limited_time).seconds > BACK_OFF_TIME:
+                self.strategy.rate_limited, self.strategy.rate_limited_time = False, None
+                self.context.logger.info("Rate limit expired.")
+            self.context.logger.info("Rate limited, waiting...")
+            return
         for ledger_id, token_id in product(self.strategy.ledger_ids, self.strategy.token_ids):
             chain_id = CHAIN_NAME_TO_ID[ledger_id]
             self.prepare_transaction(token_id=token_id, chain_id=chain_id, swap_side=SwapSide.BUY, chain_name=ledger_id)
-            self.prepare_transaction(token_id=token_id, chain_id=chain_id, swap_side=SwapSide.SELL, chain_name=ledger_id)
+            # self.prepare_transaction(token_id=token_id, chain_id=chain_id, swap_side=SwapSide.SELL, chain_name=ledger_id)
 
 
     def setup(self) -> None:
@@ -107,12 +119,10 @@ class TransactionPreparationBehaviour(TickerBehaviour):
         we just submit a message to the router to prepare a transaction.
         """
         router_kwargs = self.strategy.api_routers[0]['api_request']
-        # 
-        # url: https://arbitrum.api.0x.org/swap/v1/quote?buyToken=0x064f8b858c2a603e1b106a2039f5446d32dc81c1&sellToken=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sellAmount=100000&excludedSources=Kyber&takerAddress=0xBa95718a52b5a3DBa749a7641712Dc05a3550d4f
 
         url = "https://arbitrum.api.0x.org/swap/v1/quote"
 
-        if swap_side == SwapSide.BUY:
+        if swap_side == SwapSide.SELL:
             # we are buying the token
             sell_token, buy_token = CHAIN_ID_TO_BASE_CURRENCY[chain_id], CHAIN_ID_TO_TOKENS[chain_id][token_id]
         else:
@@ -126,7 +136,6 @@ class TransactionPreparationBehaviour(TickerBehaviour):
             "excludedSources": "Kyber", # we exclude Kyber due to the hack.
             "takerAddress": self.context.agent_address,
         }
-
         query_string = "&".join([f"{k}={v}" for k, v in params.items()])
         url = f"{url}?{query_string}"
         http_msg, dialogue = self.context.http_dialogues.create(

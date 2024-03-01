@@ -57,7 +57,7 @@ public_id: eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa
 type: connection
 config:
   host: ${str:0.0.0.0}
-  port: ${int:8888}
+  port: ${int:8887}
 ---
 public_id: eightballer/prometheus:0.1.0:bafybeieq7ioolzjrxh2whdcdn6sfwwunwtnuiph5e45kx2hl667a6vcqta
 type: skill
@@ -96,15 +96,15 @@ models:
       ledger_ids:
       - arbitrum
       token_ids:
-      - 'edu-coin'
-      - 'palm-ai'
-      - 'grape-2-2'
-      - 'decubate'
-      - 'botto'
-      - 'pepe'
+      # - 'edu-coin'
+      # - 'palm-ai'
+      # - 'grape-2-2'
+      # - 'decubate'
+      # - 'botto'
+      # - 'pepe'
+      # - 'dogwifcoin'
       - 'solana'
-      - 'dogwifcoin'
-      - 'bonk'
+      # - 'bonk'
       base_currency: DAI
       api_routers:
       - name: 0x

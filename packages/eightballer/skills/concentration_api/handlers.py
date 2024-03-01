@@ -22,6 +22,7 @@
 # pylint: disable=W0212,C0209
 
 from dataclasses import asdict
+from enum import Enum
 import json
 from typing import Dict, Optional, Union, cast
 
@@ -271,7 +272,17 @@ class HttpHandler(Handler):
         ledger_id = payload.get("ledger_id", "ethereum")
         self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
 
-        side = OrderSide.BUY if direction == "buy" else OrderSide.SELL
+        class SwipeSide(Enum):
+            RIGHT = "right"
+            LEFT = "left"
+
+        swipe_to_intent= {
+            SwipeSide.RIGHT.name: OrderSide.BUY,
+            SwipeSide.LEFT.name: OrderSide.SELL
+        }
+
+        side = swipe_to_intent[direction]
+        self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
         order = Order(
             side=side,
             type=OrderType.MARKET,

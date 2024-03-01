@@ -47,6 +47,8 @@ class PriceRoutingStrategy(Model):
         self.ledger_ids = kwargs.pop("ledger_ids", [])
         self.api_routers = kwargs.pop("api_routers", [])
         self.base_currency = kwargs.pop("base_currency", "USD")
+        self.rate_limited = False
+        self.rate_limited_time = None
 
 
     def get_swap_terms(self, raw_tx: Dict, ledger_id: str) -> Terms:
