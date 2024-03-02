@@ -21,3 +21,20 @@ export const CHAINS = {
     GNOSIS: 100,
     POLYGON: 137
 }
+
+export const SUPPORTED_LUKSO_NETWORKS = [
+    {
+      "name": "LUKSO Mainnet",
+      "chainId": "42",
+      "rpcUrl": "https://rpc.lukso.gateway.fm",
+      "ipfsGateway": "https://api.universalprofile.cloud/ipfs",
+      "token": "LYX"
+    },
+    {
+      "name": "LUKSO Testnet",
+      "chainId": "4201",
+      "rpcUrl": "https://rpc.testnet.lukso.gateway.fm",
+      "ipfsGateway": "https://api.universalprofile.cloud/ipfs",
+      "token": "LYXt"
+    }
+  ]

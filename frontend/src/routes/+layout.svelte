@@ -1,8 +1,12 @@
 <script>
+	// @ts-nocheck
+
 	import '../app.postcss';
 	import { AppShell, AppBar, Modal, Toast, initializeStores } from '@skeletonlabs/skeleton';
 	import { base } from '$app/paths';
 	import SelectMode from '$lib/components/SelectMode.svelte';
+	import Connect from '$lib/components/Connect.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -12,6 +16,7 @@
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
+	import { likedCount } from '$lib/stores';
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -22,6 +27,12 @@
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
+
+	$: likes = 0;
+
+	likedCount.subscribe((val) => {
+		likes = val;
+	});
 
 	initializeStores();
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
@@ -36,16 +47,11 @@
 		<AppBar>
 			<svelte:fragment slot="lead">
 				<strong class="text-xl uppercase">
-					<a
-						href={`/`}
-						rel="noreferrer"
-					>
-					Speculation Station
-				</a>
-					
+					<a href={`/`} rel="noreferrer"> Speculation Station </a>
 				</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<div>Liked {likes}</div>
 				<SelectMode />
 				<a
 					class="btn btn-sm variant-ghost-surface"
@@ -53,11 +59,15 @@
 					target="_blank"
 					rel="noreferrer"
 				>
-					❤️ 
+					❤️
 				</a>
+				<Connect />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->
 	<slot />
+	<svelte:fragment slot="pageFooter">
+		<!-- <Footer /> -->
+	</svelte:fragment>
 </AppShell>

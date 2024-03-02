@@ -1,4 +1,4 @@
-import {BASE_URL} from '$lib/consts'
+import { BASE_URL } from '$lib/consts'
 
 /**
  * @param {string} endpoinName
@@ -8,7 +8,7 @@ async function getRequest(endpoinName, handleError) {
     try {
         const response = await fetch(`${BASE_URL}${endpoinName}`);
         if (response.ok) {
-            const data  = await response.json();
+            const data = await response.json();
             return data;
         } else {
             throw new Error(`${endpoinName} network response was not ok.`);
@@ -16,7 +16,7 @@ async function getRequest(endpoinName, handleError) {
     } catch (err) {
         handleError(endpoinName, err)
         return err
-    } 
+    }
 }
 /**
  * @param {string} endpoinName
@@ -28,7 +28,7 @@ async function postRequest(endpoinName, body, handleError) {
         const response = await fetch(`${BASE_URL}${endpoinName}`, body);
 
         if (response.ok) {
-            const data  = await response.json();
+            const data = await response.json();
             return data;
         } else {
             throw new Error(`${endpoinName} network response was not ok.`);
@@ -36,13 +36,13 @@ async function postRequest(endpoinName, body, handleError) {
     } catch (err) {
         handleError(endpoinName, err)
         return err
-    } 
+    }
 }
 
 /**
  * @param {any} handleApiError
  */
-export async function getCurrentCoin(handleApiError){
+export async function getCurrentCoin(handleApiError) {
     const COIN_ENDPOINT = `/current_coin`;
     const response = await getRequest(COIN_ENDPOINT, handleApiError);
 
@@ -53,7 +53,7 @@ export async function getCurrentCoin(handleApiError){
 /**
  * @param {any} handleApiError
  */
-export async function getTransactions(handleApiError){
+export async function getTransactions(handleApiError) {
     const TRANSACTIONS_ENPOINT = `/transactions`;
     const response = await getRequest(TRANSACTIONS_ENPOINT, handleApiError);
 
@@ -63,7 +63,7 @@ export async function getTransactions(handleApiError){
 /**
  * @param {any} handleApiError
  */
-export async function getLedgers(handleApiError){
+export async function getLedgers(handleApiError) {
     const LEDGERS_ENPOINT = `/ledgers`;
     const response = await getRequest(LEDGERS_ENPOINT, handleApiError);
     return response.ledgers
@@ -74,7 +74,7 @@ export async function getLedgers(handleApiError){
  * @param {string} direction
  * @param {any} [handleApiError]
  */
-export async function postSwap(coin_id, direction, handleApiError){
+export async function postSwap(coin_id, direction, handleApiError) {
     const SWAP_ENDPOINT = `/swipe`;
     const body = {
         method: "POST",
@@ -85,5 +85,19 @@ export async function postSwap(coin_id, direction, handleApiError){
     };
 
     const response = await postRequest(SWAP_ENDPOINT, body, handleApiError);
+    return response
+};
+
+/**
+ * @param {string} user_id
+ */
+export async function postUser(user_id) {
+    const USER_ENDPOINT = `/users/${user_id}`;
+    const body = {
+        method: "POST",
+        body: JSON.stringify({}),
+    };
+
+    const response = await postRequest(USER_ENDPOINT, body, () => { });
     return response
 };
