@@ -71,18 +71,18 @@ export async function getLedgers(handleApiError){
 
 /**
  * @param {string} coin_id
- * @param {string} chain_id
+ * @param {string} ledger_id
  * @param {string} direction
  * @param {any} [handleApiError]
  */
-export async function postSwap(coin_id, direction, chain_id, handleApiError){
+export async function postSwap(coin_id, direction, ledger_id, handleApiError){
     const SWAP_ENDPOINT = `/swipe`;
     const body = {
         method: "POST",
         body: JSON.stringify({
             coin_id,
             direction,
-            chain_id
+            ledger_id 
         }),
     };
 

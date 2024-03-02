@@ -245,8 +245,6 @@ class HttpHandler(Handler):
         :param http_msg: the http message
         :param http_dialogue: the http dialogue
         """
-
-
         http_response = http_dialogue.reply(
             performative=HttpMessage.Performative.RESPONSE,
             target_message=http_msg,
@@ -269,21 +267,64 @@ class HttpHandler(Handler):
 
         direction = payload.get("direction")
         coin_id = payload.get("coin_id")
-        ledger_id = payload.get("ledger_id", "ethereum")
+        ledger_id = payload.get("ledger_id",)
         self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
+
+        if direction.lower() not in ["right", "left"]:
+            status_text = "Invalid swipe direction."
+            http_response = http_dialogue.reply(
+                performative=HttpMessage.Performative.RESPONSE,
+                target_message=http_msg,
+                version=http_msg.version,
+                status_code=400,
+                status_text=status_text,
+                headers=self._get_cors_headers(http_msg),
+                body=json.dumps({"result": status_text}).encode("utf-8"),
+            )
+            self.context.logger.info("responding with: {}".format(status_text))
+            self.context.outbox.put_message(message=http_response)
+            return
+        
+        if not ledger_id:
+            status_text = "Invalid ledger id."
+            http_response = http_dialogue.reply(
+                performative=HttpMessage.Performative.RESPONSE,
+                target_message=http_msg,
+                version=http_msg.version,
+                status_code=400,
+                status_text=status_text,
+                headers=self._get_cors_headers(http_msg),
+                body=json.dumps({"result": status_text}).encode("utf-8"),
+            )
+            self.context.logger.info("responding with: {}".format(status_text))
+            self.context.outbox.put_message(message=http_response)
+            return
+        
+        if not coin_id:
+            status_text = "Invalid coin id."
+            http_response = http_dialogue.reply(
+                performative=HttpMessage.Performative.RESPONSE,
+                target_message=http_msg,
+                version=http_msg.version,
+                status_code=400,
+                status_text=status_text,
+                headers=self._get_cors_headers(http_msg),
+                body=json.dumps({"result": status_text}).encode("utf-8"),
+            )
+            self.context.logger.info("responding with: {}".format(status_text))
+            self.context.outbox.put_message(message=http_response)
+            return
 
         class SwipeSide(Enum):
             RIGHT = "right"
             LEFT = "left"
 
-        swipe_to_intent= {
-            SwipeSide.RIGHT.name: OrderSide.BUY,
-            SwipeSide.LEFT.name: OrderSide.SELL
+        swipe_to_intent = {
+            SwipeSide.RIGHT.value: OrderSide.BUY,
+            SwipeSide.LEFT.value: OrderSide.SELL
         }
 
-        breakpoint()
-
-        side = swipe_to_intent[direction]
+        side = swipe_to_intent[direction.lower()]
         self.context.logger.info(f"Swiping {direction} {coin_id} on {ledger_id}")
         order = Order(
             side=side,
@@ -341,7 +382,6 @@ class HttpHandler(Handler):
     def _submit_order_to_router(self, order):
         self.context.logger.info(f"Submitting order to router: {order}")
         strategy = cast(Strategy, self.context.strategy)
-
         order_msg, order_dialogue = strategy.order_dialogues.create(
             performative=OrdersMessage.Performative.ORDER,
             order=order,
@@ -513,13 +553,20 @@ class LedgerApiHandler(Handler):
 
         self.context.logger.debug("received raw transaction={}".format(ledger_api_msg))
         signing_dialogues = cast(SigningDialogues, self.context.signing_dialogues)
+        breakpoint()
+
+
+        raw_tx = ledger_api_msg.raw_transaction
 
         # # we have to do a hack here because api.get_transfer_transaction()
         # # adds in data when transfering to SAFE contract.
         # # this is a hack to remove that data.
         # ledger_api_msg.raw_transaction._body["data"] = "0x"
+
+
         ledger_api_dialogue.initial_ledger_id = ledger_api_msg.raw_transaction.ledger_id
         ledger_api_msg.raw_transaction._ledger_id = "ethereum"
+
         signing_msg, signing_dialogue = signing_dialogues.create(
             counterparty=self.context.decision_maker_address,
             performative=SigningMessage.Performative.SIGN_TRANSACTION,
@@ -548,7 +595,7 @@ class LedgerApiHandler(Handler):
 
         breakpoint()
 
-        is_settled = TrueLedgerApis.is_transaction_settled(
+        is_settled = LedgerApis.is_transaction_settled(
             ledger_api_dialogue.terms.ledger_id,
             ledger_api_msg.transaction_receipt.receipt,
         )

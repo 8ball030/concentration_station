@@ -15,11 +15,15 @@ classifiers = [ "Environment :: Console", "Environment :: Web Environment", "Dev
 include = "packages"
 
 [tool.poetry.dependencies]
-python = "<4.0,>=3.8"
+python = "<4.0,>=3.9"
 open-autonomy = "<=0.13.6"
 open-aea-cli-ipfs = "==1.35.0"
 open-aea-ledger-ethereum = "==1.35.0"
 open-aea = "==1.35.0"
+matplotlib = "==3.8.3"
+pylsl= "==1.16.2"
+dlib = "==19.24.2"
+
 
 aiohttp = "==3.8.3"
 openapi-core = "0.14.5"

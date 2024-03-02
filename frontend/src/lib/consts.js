@@ -28,6 +28,14 @@ export const CHAIN_NAME = {
     8453: 'Base'
 }
 
+export const CHAIN_ID_TO_LEDGER_ID = {
+    1: "ethereum",
+    137: "matic",
+    42220: "celo",
+    42161: "arbitrum",
+    8453: "base"
+}
+
 export const BASE_URL = 'http://192.168.222.31:5553'
 export const SOCKET_URL = 'http://192.168.222.31:5554'
 export const DEFAULT_CHAIN = CHAIN_MODE.ARBITRUM

@@ -94,8 +94,11 @@ class TransactionBehaviour(TickerBehaviour):
     def check_processing(self) -> None:
         """Check processing."""
         # we submit the ledger api message and check if it has been processed
-        msg = self.context.price_routing_strategy.current_tx
-        if msg is None:
+        try:
+            msg = getattr(self.context.price_routing_strategy, "current_tx")
+            if msg is None:
+                return
+        except AttributeError:
             return
         self.context.send_to_skill(msg)
 
@@ -125,7 +128,7 @@ class TransactionBehaviour(TickerBehaviour):
 
     def _start_processing(self) -> None:
         """Process the next transaction."""
-        terms = self.waiting.pop(0)
+        terms, raw_tx = self.waiting.pop(0)
         self.context.logger.info(
             f"Processing transaction, {len(self.waiting)} transactions remaining"
         )
@@ -136,7 +139,9 @@ class TransactionBehaviour(TickerBehaviour):
             counterparty=LEDGER_API_ADDRESS,
             performative=LedgerApiMessage.Performative.GET_RAW_TRANSACTION,
             terms=terms,
+
         )
+        ledger_api_dialogue.raw_tx = raw_tx
         ledger_api_dialogue.terms = terms
         ledger_api_dialogue = cast(LedgerApiDialogue, ledger_api_dialogue)
         self.processing_time = 0.0
