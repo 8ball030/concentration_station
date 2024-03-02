@@ -103,3 +103,17 @@ export async function postUser(user_id) {
     const response = await postRequest(USER_ENDPOINT, body, () => { });
     return response
 };
+
+/**
+ * @param {string} mode
+ */
+export async function postMode(mode) {
+    const USER_ENDPOINT = `/mode`;
+    const body = {
+        method: "POST",
+        body: JSON.stringify({ mode }),
+    };
+
+    const response = await postRequest(USER_ENDPOINT, body, () => { });
+    return response
+};

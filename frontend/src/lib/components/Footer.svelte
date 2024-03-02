@@ -33,7 +33,7 @@
 				class="bg-black/50 aspect-[21/9]"
 				alt="Post"
 			/>
-			<h4 class="text-tertiary-100 p-10">Token Price: {coin?.data?.price || 'n/a'}</h4>
+			<h4 class="text-tertiary-100">Token Price: {coin?.data?.price || 'n/a'}</h4>
 		</div>
 		<div class="flex gap-10 justify-start text-tertiary-300 p-10">
 			<div>Nework Activity:</div>

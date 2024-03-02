@@ -41,9 +41,14 @@
 		cardList = value;
 	});
 
+	async function handleSubmitMode(val) {
+		const res = await postMode(val);
+	}
+
 	$: mode.subscribe((value) => {
 		modeValue = value;
 		if (value === APP_MODE.DEGEN || value === APP_MODE.AGENT) {
+			handleSubmitMode(value);
 			socket.connect();
 		} else {
 			socket.disconnect();
