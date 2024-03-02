@@ -1,5 +1,6 @@
 <script>
 	// @ts-nocheck
+	import { onMount } from 'svelte';
 
 	import '../app.postcss';
 	import { AppShell, AppBar, Modal, Toast, initializeStores } from '@skeletonlabs/skeleton';
@@ -8,6 +9,7 @@
 	import Connect from '$lib/components/Connect.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import SelectChain from '$lib/components/SelectChain.svelte';
+	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -30,6 +32,10 @@
 
 	initializeStores();
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
+
+	onMount(() => {
+		autoModeWatcher();
+	});
 </script>
 
 <Toast />

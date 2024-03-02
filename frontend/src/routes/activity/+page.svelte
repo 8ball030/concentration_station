@@ -41,8 +41,8 @@
 			</tbody>
 		</table>
 	{/await}
-	<!-- {#await transactionsArray then transactionsArray}
-		<h3 class="mb-2 text-xl">Leaderbvoard</h3>
+	{#await transactionsArray then transactionsArray}
+		<h3 class="mt-20 mb-2 text-xl">Leader board</h3>
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -69,5 +69,5 @@
 				{/each}
 			</tbody>
 		</table>
-	{/await} -->
+	{/await}
 </div>
