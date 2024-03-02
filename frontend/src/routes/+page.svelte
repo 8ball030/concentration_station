@@ -114,11 +114,7 @@
 	function updateActiveCard(intentionDirection) {
 		console.log('updateActiveCard', intentionDirection)
 		outMoveDirection = MOVE_DIRECTION[intentionDirection];
-		if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
-			cardList = [cardList.slice(1)];
-		} else {
-			cardList = [cardList.slice(1)];
-		}
+		cardList = [cardList.slice(1)];
 
 		handling = false
 	}

@@ -32,7 +32,7 @@
             </div>
             <div>
                 <div on:click={() => selectMode(APP_MODE.AGENT)} class="flex-auto">
-                    <dt>{APP_MODE.AGENT}</dt>
+                    <dt> 🤖🤖🤖{APP_MODE.AGENT}</dt>
                 </div>
             </div>
             <div>
