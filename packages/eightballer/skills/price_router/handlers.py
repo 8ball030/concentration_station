@@ -69,7 +69,7 @@ class HttpHandler(Handler):
 
         :param message: the message
         """
-        self.context.logger.debug("handling http message...")
+        self.context.logger.info(f"handling http message...{message}")
         http_message = cast(HttpMessage, message)
         dialogue = self.context.http_dialogues.update(http_message)
 
@@ -83,9 +83,11 @@ class HttpHandler(Handler):
             for key in self.strategy.api_routers[0]['api_request']['keys']:
                 if key in data:
                     result[key] = data[key]
-        self.context.logger.debug(f"result: {result}")
-        self.context.price_routing_strategy.prepared_transactions[dialogue.chain_id][dialogue.swap_side.name] = result
         self.strategy.rate_limited_time, self.strategy.rate_limited = None, False
+        if not result:
+            self.context.logger.error("No result!")
+            return
+        self.context.price_routing_strategy.prepared_transactions[dialogue.chain_id][dialogue.swap_side.name] = result
 
 
     def teardown(self) -> None:
@@ -133,12 +135,7 @@ class OrdersHandler(Handler):
         """Send the raw transaction to the ledger."""
         self.context.logger.info(f"Sending raw tx!")
         self.context.logger.debug(f"{raw_tx}")
-        ledger_api_dialogues = cast(
-            LedgerApiDialogues, self.context.ledger_api_dialogues
-        )
         strategy = cast(PriceRoutingStrategy, self.context.price_routing_strategy)
-        to_address = "0xdef1c0ded9bec7f1a1670819833240f027b25eff"
-
         terms = strategy.get_swap_terms(raw_tx, order.exchange_id)
         if terms is None:
             self.context.logger.error("Invalid terms!")

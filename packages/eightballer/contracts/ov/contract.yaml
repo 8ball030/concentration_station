@@ -1,0 +1,15 @@
+name: ov
+author: eightballer
+version: 0.1.0
+type: contract
+description: The scaffold contract scaffolds a contract to be implemented by the developer.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  __init__.py: bafybeib7kldrynoa65npbg7n2aaeytc5p2y4w43rflslri2nnsubo4afby
+  contract.py: bafybeibpaw64qv53ltcqcjhhy4rcb2jihtpyg3y52jmuh2uw7vgb5bnkye
+fingerprint_ignore_patterns: []
+class_name: MyScaffoldContract
+contract_interface_paths: {}
+dependencies: {}
+contracts: []

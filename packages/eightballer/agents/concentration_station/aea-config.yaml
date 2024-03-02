@@ -11,7 +11,7 @@ connections:
 - eightballer/http_server:0.1.0:bafybeiesqnl6l5urffwd52apfaka3l3u5nz5tobxxlg52hawhedun3hfhq
 - eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa47vftbpeszotl3x2knm
 - eightballer/websocket_server:0.1.0:bafybeibddsrpnopa6j5ldedqtd5yzqphrzr665asqcakmawr5djq6ktycy
-- valory/ledger:0.19.0:bafybeiecj7qddoorvzda7kj5izvlqlj7omrjlnzgpw4eyg6crtzkadqkwa
+- valory/ledger:0.19.0:bafybeighklpwb7qjt2bg74p2sjko4uenmlq5kveec7w2erlhxvzcdbqiki
 contracts:
 - eightballer/erc_20:0.1.0:bafybeihzyver74cyqzngkzicirjnrphg464hzsyflngosrda7ickmvapzi
 protocols:
@@ -25,9 +25,9 @@ protocols:
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
 skills:
-- eightballer/balance_metrics:0.1.0:bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly
-- eightballer/concentration_api:0.1.0:bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq
-- eightballer/price_router:0.1.0:bafybeidynxvj5pev26dmadb6auuo54rmbhedpzuntxocxmokzwfhysi5aq
+- eightballer/balance_metrics:0.1.0:bafybeifc4jpkzjdurmocplqvin65ig2wmmfcgv7sdb6ipmdfnt7e2xhnfy
+- eightballer/concentration_api:0.1.0:bafybeibvel2eslev6leqcayhwr5axtmpcxde3xqkfqqz2wwzdisyhgzhcq
+- eightballer/price_router:0.1.0:bafybeihchf3gqb3m6nlc5pcz5hwcs75shyp73yc4fbjnupzt4x4yotz7uy
 - eightballer/prometheus:0.1.0:bafybeif4evjhwa3ac5bdojqs2gi7pvr6evnnwml2gsopktdnc6fx3vr5tu
 default_ledger: ethereum
 required_ledgers:
@@ -101,17 +101,17 @@ models:
       api_routers:
       - name: 0x
         api_request:
-          url: https://arbitrum.api.0x.org/swap/v1/quote?buyToken=0x064f8b858c2a603e1b106a2039f5446d32dc81c1&sellToken=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sellAmount=100000&excludedSources=Kyber&takerAddress=0xBa95718a52b5a3DBa749a7641712Dc05a3550d4f
+          url: https://arbitrum.api.0x.org
           method: GET
           headers:
-            0x-api-key: 1a560eb1-e195-448a-b48c-4a6b25a2314f
+            0x-api-key: ${API_KEY:str:1a560eb1-e195-448a-b48c-4a6b25a2314f}
           body: ''
           version: 1"
           keys:
+          - from
+          - to
+          - data
           - value
           - gasPrice
           - gas
-          - estimatedGas
-          - to
-          - data
-          - from
+          - nonce

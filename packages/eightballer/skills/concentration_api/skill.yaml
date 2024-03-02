@@ -9,16 +9,16 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeib4bffpwax236niv2mh4ulmgs2jojbqaxcvcfncpo27uprloxt6p4
-  behaviours.py: bafybeib7o3wdj42hke6roxx4dnghxo5dodcfzxdrgc7s3iyads67mz2m6m
+  behaviours.py: bafybeidfqnh5bt62wytibwktxu7kdjyliaou4scqwofsivotuq5r46r7ly
   dialogues.py: bafybeicudhrj5acixtwcsnixcsi325a7p2n3eptq2pc2mfnqabbbggwqym
-  handlers.py: bafybeie5apgrsqxxnrdamnb3pmaw3n5yyzf7pqw4nncsby24dmuj7thz6y
+  handlers.py: bafybeihd2gfsfgif4hdobi65ca272iy4ap3hcvkqpyhlvapwlt4b7ifdwi
   models.py: bafybeiacdanmjufuai3evn2og5ltxm5r36ugme2x5qvkfyoblviun25iby
-  open_api_spec.yaml: bafybeiedczpujw2swhyupqj3jsr3u32kmoducowpmx6o6wlubyqjevsib4
+  open_api_spec.yaml: bafybeic6f7u2ubzsg44dq6ds7z4atq5cmq3aon6p45oncnyp7l5crlcery
   strategy.py: bafybeibiv52gw4eecxrh3z5um6gv3742sipcyna2onmakz2u7vpkfjc664
   tests/test_base.py: bafybeifdxtgkxo7shk5apcwtfp6nbf6ik274cnbfmhnmiel3kqo2ok7iqa
 fingerprint_ignore_patterns: []
 connections:
-- valory/ledger:0.19.0:bafybeiecj7qddoorvzda7kj5izvlqlj7omrjlnzgpw4eyg6crtzkadqkwa
+- valory/ledger:0.19.0:bafybeighklpwb7qjt2bg74p2sjko4uenmlq5kveec7w2erlhxvzcdbqiki
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicj23oli6dvzj22sfvtfc46duqzvbpis5yskq5f5t55qikvwjtfme
@@ -30,7 +30,7 @@ protocols:
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
 skills:
-- eightballer/balance_metrics:0.1.0:bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly
+- eightballer/balance_metrics:0.1.0:bafybeifc4jpkzjdurmocplqvin65ig2wmmfcgv7sdb6ipmdfnt7e2xhnfy
 behaviours:
   balance_check:
     args: {}
