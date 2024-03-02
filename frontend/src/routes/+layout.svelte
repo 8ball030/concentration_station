@@ -17,7 +17,6 @@
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
-	import { likedCount } from '$lib/stores';
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -28,12 +27,6 @@
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
-
-	$: likes = 0;
-
-	likedCount.subscribe((val) => {
-		likes = val;
-	});
 
 	initializeStores();
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
@@ -47,12 +40,15 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">
-					<a href={`/`} rel="noreferrer"> Speculation Station </a>
-				</strong>
+				<div class="flex gap-20">
+					<strong class="text-xl">
+						<a href={`/`} rel="noreferrer"> Speculation Station </a>
+					</strong>
+					<a class="text-xl" href={`${base}/profile`}> Profile </a>
+					<a class="text-xl" href={`${base}/activity`}> Activity </a>
+				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<div>Liked {likes}</div>
 				<SelectMode />
 				<SelectChain />
 				<a
@@ -70,6 +66,6 @@
 	<!-- Page Route Content -->
 	<slot />
 	<svelte:fragment slot="pageFooter">
-		<!-- <Footer /> -->
+		<Footer />
 	</svelte:fragment>
 </AppShell>

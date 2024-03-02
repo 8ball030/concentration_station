@@ -1,15 +1,14 @@
 <script>
 	// @ts-nocheck
 	import { onMount } from 'svelte';
-	import { ProgressBar, getToastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore } from '@skeletonlabs/skeleton';
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
 	import { getCurrentCoin, postSwap } from '$lib/actions';
-
 	import { state, mode, chain } from '$lib/stores';
-	import { SOCKET_URL, MOVE_DIRECTION, APP_MODE, STATUS_MSGS } from '$lib/consts';
-	import { transactionLink, likedCount, recentTrx } from '$lib/stores';
+	import { SOCKET_URL, APP_MODE, STATUS_MSGS } from '$lib/consts';
+	import { transactionLink, likedCount, recentTrx, currentCoin } from '$lib/stores';
 	import * as buffer from 'buffer';
 
 	const socket = io(SOCKET_URL, {});
@@ -20,9 +19,10 @@
 	let coin = null;
 	let cardList = [0];
 	let explorerLink = '';
+	let longestStreak = 0;
 
 	// states
-	let loading = false;
+	$: loading = false;
 	let handling = false;
 	let count = 0;
 
@@ -98,7 +98,7 @@
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true;
 		handling = true;
-		const res = await postSwap(coin?.id, intentionDirection, chain_id, handleApiError);
+		const res = await postSwap(coin?.id, intentionDirection, chainId, handleApiError);
 
 		if (!res.error) {
 			getCoin();
@@ -117,7 +117,10 @@
 
 	async function getCoin() {
 		let res = await getCurrentCoin(handleApiError);
-		if (!res?.error) coin = res;
+		if (!res?.error) {
+			currentCoin.set(res);
+			coin = res;
+		}
 	}
 
 	function handleApiError(endpoint, err) {
@@ -125,16 +128,21 @@
 	}
 </script>
 
-<div class="stack grid place-items-center mt-40">
-	{#each cardList as dummy (dummy)}
-		<Card {coin} chainId onbuttonTapped={handleIntention} />
-	{/each}
-	{#if loading}
-		<div class="w-96">
-			<ProgressBar value={undefined} />
-		</div>
-	{/if}
+<div class="flex justify-between">
+	<div class="font-semibold flex gap-10 p-10">
+		{#if coin?.name}
+			<div>{coin?.name} - Market Cap: {coin?.data?.market_cap || ''}</div>
+			<div>Total Volume: {coin?.data?.total_volume || ''}</div>
+		{/if}
+	</div>
+	<div class="font-semibold flex gap-10 p-10">
+		<div>Current Streak: {count}</div>
+		<div>Longest Streak: {longestStreak}</div>
+	</div>
 </div>
-
-<style>
-</style>
+<hr class="opacity-50" />
+<div class="place-items-center mt-20">
+	{#each cardList as dummy (dummy)}
+		<Card {loading} {coin} {chainId} onbuttonTapped={handleIntention} />
+	{/each}
+</div>
