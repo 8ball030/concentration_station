@@ -17,10 +17,14 @@
 	} from '$lib/consts';
 	import { transactionLink, likedCount, recentTrx, currentCoin } from '$lib/stores';
 	import * as buffer from 'buffer';
+	import { mockList } from '$lib/mock';
+
+	const { DISLIKE, LIKE } = INTENTION_DIRECTIONS;
 
 	const socket = io(SOCKET_URL, {});
 
 	$: connection_status = socket.connected;
+	$: outMoveDirection = 0;
 
 	let chainId;
 	let coin = null;
@@ -34,6 +38,7 @@
 	let count = 0;
 
 	$: modeValue = '';
+	$: index = 0;
 
 	const toastStore = getToastStore();
 
@@ -158,8 +163,30 @@
 	</div>
 </div>
 <hr class="opacity-50" />
-<div class="place-items-center mt-20">
-	{#each cardList as dummy (dummy)}
-		<Card {loading} {coin} {chainId} onbuttonTapped={handleIntention} />
-	{/each}
+<div class="flex justify-center">
+	<button
+		disabled={!coin?.name}
+		class="btn btn-outline btn-primary btn-lg"
+		on:click={() => {
+			outMoveDirection = MOVE_DIRECTION[DISLIKE];
+			handleIntention(DISLIKE, coin, chainId);
+		}}
+	>
+		<img class="like" src="./left.png" alt="left" />
+	</button>
+	<div class="place-items-center mt-20">
+		{#each cardList as dummy (dummy)}
+			<Card {loading} {coin} {chainId} {outMoveDirection} />
+		{/each}
+	</div>
+	<button
+		disabled={!coin?.name}
+		class="btn btn-outline btn-secondary btn-lg"
+		on:click={() => {
+			outMoveDirection = MOVE_DIRECTION[LIKE];
+			handleIntention(LIKE, coin, chainId);
+		}}
+	>
+		<img class="like" src="./right.png" alt="right" />
+	</button>
 </div>

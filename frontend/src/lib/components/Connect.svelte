@@ -7,6 +7,9 @@
 	import { luksoStore } from '$lib/stores';
 	import { createJwt, verifyTokenOnServer } from '$lib/actions/sign';
 	import { SUPPORTED_LUKSO_NETWORKS } from '$lib/consts';
+	import { initialize, encrypt, conditions, domains } from '@nucypher/taco';
+
+	await initialize();
 
 	let network = {};
 	let luksoProfile = {};
