@@ -5,11 +5,10 @@
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
-	import { state } from '$lib/stores';
-	import { LikedCoins } from '$lib/likedCoins';
 	import { getCurrentCoin, postSwap } from '$lib/actions';
 
-	import { SOCKET_URL, MOVE_DIRECTION } from '$lib/consts';
+	import { state, mode, chain } from '$lib/stores';
+	import { SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE } from '$lib/consts';
 	import { transactionLink, likedCount, recentTrx } from '$lib/stores';
 	import * as buffer from 'buffer';
 
@@ -17,16 +16,17 @@
 
 	$: connection_status = socket.connected;
 
+	let chain_id;
 	let coin = {};
 	let cardList = [0];
 	let explorerLink = '';
-	let count = 0;
-
-	const likedCoinsList = new LikedCoins();
 
 	// states
 	let loading = false;
 	let handling = false;
+	let count = 0;
+
+	$: modeValue = '';
 	$: outMoveDirection = 0;
 
 	const toastStore = getToastStore();
@@ -39,7 +39,8 @@
 		timeout: 1000,
 		background: 'variant-filled-success',
 		button: 'variant-ghost-success',
-		classes: 'success-toast'
+		classes: 'success-toast',
+		max: 1
 	};
 
 	transactionLink.subscribe((value) => {
@@ -47,6 +48,19 @@
 	});
 	likedCount.subscribe((val) => {
 		count += val;
+	});
+
+	$: mode.subscribe((value) => {
+		modeValue = value;
+		if (value === APP_MODE.DEGEN || value === APP_MODE.AGENT) {
+			socket.connect();
+		} else {
+			socket.disconnect();
+		}
+	});
+
+	$: chain.subscribe((value) => {
+		chain_id = value;
 	});
 
 	onMount(() => {
@@ -57,18 +71,15 @@
 			window.Buffer = buffer.Buffer;
 		}
 
-		// we want to call connect on the socket
-		socket.connect();
-
 		socket.on('connect', () => {
 			const setting = {
 				message: 'Successfully connected to the agent!',
 				timeout: 3000,
-				background: 'variant-ghost-success'
+				background: 'variant-ghost-success',
+				max: 1
 			};
 			toastStore.trigger(setting);
 			connection_status = true;
-			socket.emit('agent', 'agent');
 		});
 
 		socket.on('disconnect', () => {
@@ -76,14 +87,29 @@
 			const setting = {
 				message: 'Disconnected from the agent!',
 				timeout: 3000,
-				background: 'variant-ghost-error'
+				background: 'variant-ghost-error',
+				max: 1
 			};
 			toastStore.trigger(setting);
 		});
 
 		socket.on('data', (data) => {
-			if (!handling && coin?.id) {
-				handleIntention(data?.intention);
+			if (APP_MODE.DEGEN === modeValue) {
+				if (!handling && coin?.id) {
+					const intention = JSON.parse(data).intention;
+					const row = coin?.id + ' ' + intention;
+					const intentToast = {
+						message: '🔮 ' + row + ' 🔮',
+						timeout: 2500,
+						background: 'variant-ghost-info',
+						classes: 'info-toast',
+						position: 't',
+						max: 1
+					};
+					toastStore.trigger(intentToast);
+					updateActiveCard(intention);
+					handleIntention(intention);
+				}
 			}
 		});
 
@@ -95,33 +121,34 @@
 	});
 
 	function updateActiveCard(intentionDirection) {
+		console.log('updateActiveCard', intentionDirection);
 		outMoveDirection = MOVE_DIRECTION[intentionDirection];
-		cardList = [...cardList.slice(1), Math.max(...cardList) + 1];
-		handling = false;
-	}
+		cardList = [cardList.slice(1)];
 
-	function handleUpdateLiked(intentionDirection) {
-		if (intentionDirection === MOVE_DIRECTION.DISLIKE) {
-			likedCoinsList.remove(coin);
-		} else {
-			likedCoinsList.add(coin);
-			likedCount.set();
-		}
+		handling = false;
 	}
 
 	// when we get intention from socket submit a swap on liked ( 'right' )
 	async function handleIntention(intentionDirection) {
-		handleUpdateLiked();
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true;
 		handling = true;
-
-		const res = await postSwap(coin.id, intentionDirection, handleApiError);
+		const res = await postSwap(coin.id, intentionDirection, chain_id, handleApiError);
 
 		if (res) {
 			getCoin();
-			toastStore.trigger(succssesToast);
 			updateActiveCard(intentionDirection);
+
+			if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
+				const submittedToast = {
+					message: `🤞🏼 Transaction submitted 🤞🏼`,
+					timeout: 1000,
+					max: 1
+				};
+				toastStore.trigger(submittedToast);
+				// TODO: some check here with a callback to get the transaction hash
+				toastStore.trigger(succssesToast);
+			}
 		} else {
 			handling = false;
 		}
@@ -144,7 +171,7 @@
 
 <div class="stack grid place-items-center mt-40">
 	{#each cardList as dummy (dummy)}
-		<Card {coin} {outMoveDirection} onbuttonTapped={handleIntention} />
+		<Card {coin} chainId={chain_id} {outMoveDirection} onbuttonTapped={handleIntention} />
 	{/each}
 	{#if loading}
 		<div class="w-96">

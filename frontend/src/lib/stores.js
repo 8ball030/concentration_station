@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import { APP_MODE } from './consts'
+import { CHAIN_MODE } from './consts'
 
 export const state = writable([0]);
 export const likedState = writable(new Set());
@@ -12,3 +13,4 @@ export const accountStore = writable([])
 export const luksoStore = writable({})
 export const likedCount = writable(0)
 export const recentTrx = writable([])
+export const chain = writable(CHAIN_MODE.MAINNET)

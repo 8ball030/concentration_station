@@ -1,0 +1,18 @@
+name: speculation_station
+author: eightballer
+version: 0.1.0
+description: A telepathic agent that uses Muse to read EEG signals and predict whether
+  the user is thinking about buying or selling a cryptocurrency.
+aea_version: '>=1.0.0, <2.0.0'
+license: Apache-2.0
+fingerprint: {}
+fingerprint_ignore_patterns: []
+agent: eightballer/concentration_station:0.1.0:bafybeifbfm4ckblrdyt2citcavwjsnsbcwnpaaftsfuwpgqgu5yimqauja
+number_of_agents: 1
+deployment:
+  agent:
+    ports:
+      0:
+        8000: 8887
+        8001: 5553
+        8002: 5554

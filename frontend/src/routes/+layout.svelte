@@ -7,6 +7,7 @@
 	import SelectMode from '$lib/components/SelectMode.svelte';
 	import Connect from '$lib/components/Connect.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import SelectChain from '$lib/components/SelectChain.svelte';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -53,6 +54,7 @@
 			<svelte:fragment slot="trail">
 				<div>Liked {likes}</div>
 				<SelectMode />
+				<SelectChain />
 				<a
 					class="btn btn-sm variant-ghost-surface"
 					href={`${base}/liked`}

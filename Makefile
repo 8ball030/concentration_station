@@ -88,3 +88,10 @@ hashes:
 	poetry install
 	poetry run autonomy packages lock
 	poetry run autonomy push-all
+
+images:
+	sudo rm -rf speculation_station
+	poetry run autonomy fetch --service eightballer/speculation_station:0.1.0 --local && \
+		cd speculation_station/ && \
+		autonomy build-image
+

@@ -7,11 +7,11 @@ aea_version: '>=1.35.0, <2.0.0'
 fingerprint: {}
 fingerprint_ignore_patterns: []
 connections:
-- eightballer/http_client:0.1.0:bafybeidrvbjxesv6byvb2tzi33lugirmoyqwoamrqk4x3vvknml6tnj4nq
-- eightballer/http_server:0.1.0:bafybeifsptsaixh4aa72frtznwsewph7blfwxaxrh2oy2u3bahd4uruefy
+- eightballer/http_client:0.1.0:bafybeierw3ptzrhxoc4frwowkdceyijn65xjcj3keq3mlwdy6g4xj3ikpu
+- eightballer/http_server:0.1.0:bafybeiesqnl6l5urffwd52apfaka3l3u5nz5tobxxlg52hawhedun3hfhq
 - eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa47vftbpeszotl3x2knm
-- eightballer/websocket_server:0.1.0:bafybeifp2gvhiuviw2nwaw3qlmh75jmhbn2rqaqcqlzfdaxbawsaekb2uu
-- valory/ledger:0.19.0:bafybeicm5etjfdjel3kl32rlvc5ybbbrtclkslqahvemgluevmef77wkbq
+- eightballer/websocket_server:0.1.0:bafybeibddsrpnopa6j5ldedqtd5yzqphrzr665asqcakmawr5djq6ktycy
+- valory/ledger:0.19.0:bafybeiecj7qddoorvzda7kj5izvlqlj7omrjlnzgpw4eyg6crtzkadqkwa
 contracts:
 - eightballer/erc_20:0.1.0:bafybeihzyver74cyqzngkzicirjnrphg464hzsyflngosrda7ickmvapzi
 protocols:
@@ -21,11 +21,13 @@ protocols:
 - eightballer/prometheus:1.0.0:bafybeidg56u4eza6z3pqkpcqw5cvobjar6azi5yko4joaosb2ev5buqrdq
 - eightballer/websockets:0.1.0:bafybeigegu5iypibbhpxlvgyv7tfbof6jd7ufbmsxbe4l47wbdu3hop67e
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
+- eightballer/orders:0.1.0:bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y
 - valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
 skills:
-- eightballer/balance_metrics:0.1.0:bafybeifintauzwm3enzo3ulvoi2zoxlzf66a2p6u5ecoy2da7lt4xs2kwy
-- eightballer/concentration_api:0.1.0:bafybeifywdb6nyvb4w3czeoh3cfhgfvuc7oirruze7zjsp7773gclyx4g4
+- eightballer/balance_metrics:0.1.0:bafybeicp4hgsqhm555tpbk7hfv5s2ka24v2wwdcsngg4hpvd77jiez67ly
+- eightballer/concentration_api:0.1.0:bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq
+- eightballer/price_router:0.1.0:bafybeidynxvj5pev26dmadb6auuo54rmbhedpzuntxocxmokzwfhysi5aq
 - eightballer/prometheus:0.1.0:bafybeif4evjhwa3ac5bdojqs2gi7pvr6evnnwml2gsopktdnc6fx3vr5tu
 default_ledger: ethereum
 required_ledgers:
@@ -47,11 +49,7 @@ models:
   balance_metrics_strategy:
     args:
       ledger_ids:
-      - ethereum
       - arbitrum
-      - celo
-      - base
-      - matic
       prometheus_enabled: true
       token_addresses: {}
 ---
@@ -59,7 +57,7 @@ public_id: eightballer/prometheus:0.1.1:bafybeibc5x4ldgtl7jrgz4vjtbm3o6bf2zeyfsa
 type: connection
 config:
   host: ${str:0.0.0.0}
-  port: ${int:8888}
+  port: ${int:8887}
 ---
 public_id: eightballer/prometheus:0.1.0:bafybeieq7ioolzjrxh2whdcdn6sfwwunwtnuiph5e45kx2hl667a6vcqta
 type: skill
@@ -80,12 +78,40 @@ public_id: eightballer/http_server:0.1.0:bafybeia6shz5vnl5j7chaymvetrdrczdnca4hu
 type: connection
 config:
   host: 0.0.0.0
-  port: 5555
+  port: 5553
   target_skill_id: eightballer/concentration_api:0.1.0
 ---
 public_id: eightballer/websocket_server:0.1.0:bafybeiewepahfzsb4hlzdfomaeoinrrcdufsjlfsgjuox637gwjfneoxhu
 type: connection
 config:
   target_skill_id: eightballer/concentration_api:0.1.0
-  port: 5556
+  port: 5554
   host: 0.0.0.0
+---
+public_id: eightballer/price_router:0.1.0:bafybeie24q5y2jbarpfip5k63hzxdt7prywdcglskyo5jep7ec7ap33gzy
+type: skill
+models:
+  price_routing_strategy:
+    args:
+      ledger_ids:
+      - arbitrum
+      token_ids:
+      - solana
+      base_currency: DAI
+      api_routers:
+      - name: 0x
+        api_request:
+          url: https://arbitrum.api.0x.org/swap/v1/quote?buyToken=0x064f8b858c2a603e1b106a2039f5446d32dc81c1&sellToken=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sellAmount=100000&excludedSources=Kyber&takerAddress=0xBa95718a52b5a3DBa749a7641712Dc05a3550d4f
+          method: GET
+          headers:
+            0x-api-key: 1a560eb1-e195-448a-b48c-4a6b25a2314f
+          body: ''
+          version: 1"
+          keys:
+          - value
+          - gasPrice
+          - gas
+          - estimatedGas
+          - to
+          - data
+          - from
