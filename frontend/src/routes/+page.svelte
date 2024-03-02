@@ -8,7 +8,7 @@
 	import {state, mode, chain} from '$lib/stores'
 	import { LikedCoins } from '$lib/likedCoins';
 	import {getCurrentCoin, getLedgers, postSwap} from '$lib/actions';
-	import {SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE} from '$lib/consts'
+	import {SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE, CHAIN_ID_TO_LEDGER_ID} from '$lib/consts'
     import {transactionLink} from '$lib/stores'
 
 	const socket = io(SOCKET_URL, {});
@@ -125,9 +125,9 @@
 
 	function handleUpdateLiked(intentionDirection) {
 		if (intentionDirection === INTENTION_DIRECTIONS.DISLIKE) {
-			likedCoinsList.remove(coin);
+			// likedCoinsList.remove(coin);
 		} else {
-			likedCoinsList.add(coin);
+			// likedCoinsList.add(coin);
 		}
 	}
 
@@ -137,7 +137,7 @@
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true
 		handling = true
-		const res = await postSwap(coin.id, intentionDirection, chain_id, handleApiError)
+		const res = await postSwap(coin.id, intentionDirection, CHAIN_ID_TO_LEDGER_ID[chain_id], handleApiError)
 
 		if (res) {
 			getCoin()
