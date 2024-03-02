@@ -60,7 +60,11 @@ class PriceRoutingStrategy(Model):
         """Get the terms of a drop"""
         currency_id = self.context.shared_state['ledgers'][ledger_id].native_currency
         fee, amount, address = int(raw_tx.get("gasPrice")), int(raw_tx.get("value")), raw_tx.get("to")
-
+        tx_nonce = LedgerApis.generate_tx_nonce(
+            identifier="ethereum",
+            seller=self.context.agent_address,
+            client=address,
+        )
         api = LedgerApis.get_api("ethereum").api
         raw_tx['from'] = api.to_checksum_address(raw_tx['from'])
         raw_tx['to'] = api.to_checksum_address(raw_tx['to'])
@@ -78,6 +82,6 @@ class PriceRoutingStrategy(Model):
             fee_by_currency_id={currency_id: int(fee)},
             quantities_by_good_id={currency_id: int(amount)},
             is_sender_payable_tx_fee=True,
-            nonce=str(uuid.uuid4()),
+            nonce=tx_nonce,
         )
         return terms, raw_tx

@@ -69,7 +69,7 @@ class HttpHandler(Handler):
 
         :param message: the message
         """
-        self.context.logger.info(f"handling http message...{message}")
+        self.context.logger.debug(f"handling http message...{message}")
         http_message = cast(HttpMessage, message)
         dialogue = self.context.http_dialogues.update(http_message)
 

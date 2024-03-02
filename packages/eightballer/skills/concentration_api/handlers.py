@@ -24,11 +24,14 @@
 from dataclasses import asdict
 from enum import Enum
 import json
+from time import sleep
 from typing import Dict, Optional, Union, cast
 
 from aea.crypto.ledger_apis import LedgerApis
 from aea.protocols.base import Message
 from aea.skills.base import Handler
+from aea_ledger_ethereum import SignedTransaction
+from web3 import Web3
 
 from packages.eightballer.protocols.default import DefaultMessage
 from packages.eightballer.protocols.http.message import HttpMessage
@@ -53,6 +56,17 @@ from packages.valory.connections.ledger.tests.conftest import make_ledger_api_co
 from packages.valory.protocols.ledger_api.message import LedgerApiMessage
 from packages.eightballer.protocols.orders.message import OrdersMessage
 
+import os
+import json
+import web3
+
+import requests
+
+from web3 import Web3
+
+# Connect to the network
+
+
 
 
 
@@ -75,6 +89,7 @@ class HttpHandler(Handler):
         """Implement the setup."""
         self.context.logger.info(f"HttpHandler: setup method called. to procol_id={HttpMessage.protocol_id}")
         super().setup()
+        self.context.shared_state['txs'] = []
 
     def handle(self, message: Message) -> None:
         """
@@ -188,11 +203,6 @@ class HttpHandler(Handler):
         :param http_dialogue: the http dialogue
         """
         txs = self.context.strategy.get_txs()
-        txs = [{
-            "chain_id": "1",
-            "tx_hash": "0x1234567890",
-            "block_explorer_url": "https://etherscan.io/txs/0x1234567890",
-        }]
         http_response = http_dialogue.reply(
             performative=HttpMessage.Performative.RESPONSE,
             target_message=http_msg,
@@ -200,7 +210,7 @@ class HttpHandler(Handler):
             status_code=200,
             status_text="",
             headers=self._get_cors_headers(http_msg),
-            body=json.dumps([f for f in txs]).encode("utf-8"),
+            body=json.dumps(self.context.shared_state['txs']).encode("utf-8"),
         )
         self.context.outbox.put_message(message=http_response)
 
@@ -553,15 +563,6 @@ class LedgerApiHandler(Handler):
 
         self.context.logger.debug("received raw transaction={}".format(ledger_api_msg))
         signing_dialogues = cast(SigningDialogues, self.context.signing_dialogues)
-        breakpoint()
-
-
-        raw_tx = ledger_api_msg.raw_transaction
-
-        # # we have to do a hack here because api.get_transfer_transaction()
-        # # adds in data when transfering to SAFE contract.
-        # # this is a hack to remove that data.
-        # ledger_api_msg.raw_transaction._body["data"] = "0x"
 
 
         ledger_api_dialogue.initial_ledger_id = ledger_api_msg.raw_transaction.ledger_id
@@ -592,8 +593,6 @@ class LedgerApiHandler(Handler):
 
 
         ledger_api = EvmLedgerApis.get_api(ledger_api_dialogue.terms.ledger_id)
-
-        breakpoint()
 
         is_settled = LedgerApis.is_transaction_settled(
             ledger_api_dialogue.terms.ledger_id,
@@ -679,6 +678,7 @@ class SigningHandler(Handler):
         :param signing_msg: the signing message
         :param signing_dialogue: the dialogue
         """
+
         self.context.logger.info("transaction signing was successful.")
         ledger_api_dialogue = signing_dialogue.associated_ledger_api_dialogue
         last_ledger_api_msg = ledger_api_dialogue.last_incoming_message
@@ -688,6 +688,41 @@ class SigningHandler(Handler):
         if last_ledger_api_msg is None:
             raise ValueError("Could not retrieve last message in ledger api dialogue")
 
+        # we do this in order to use the associated raw raw tx from the ox api.
+        raw_tx = ledger_api_dialogue.raw_tx
+        nonce = last_ledger_api_msg.raw_transaction._body['nonce']
+        raw_tx['nonce'] = nonce
+        for string in ['value', 'gas', 'gasPrice']:
+            raw_tx[string] = int(raw_tx[string])
+
+        for address in ['to', 'from']:
+            raw_tx[address] = Web3.toChecksumAddress(raw_tx[address])
+
+        # we have to do this hack as the terms are not matching the raw_tx
+        try:
+            rpc_url = os.environ.get('RPC_URL')
+            pk = os.environ.get('ETH_KEY')
+            w3 = Web3(Web3.HTTPProvider(rpc_url))
+            acct = w3.eth.account.from_key(pk)
+            signed_tx = acct.sign_transaction(raw_tx)
+            tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+            self.context.logger.info(f"Transaction hash: {tx_hash.hex()}")#
+
+            obj = {
+                "chain_id": last_ledger_api_msg.terms.ledger_id,
+                "tx_hash": tx_hash.hex(),
+                "block_explorer_url": f"https://arbiscan.io/tx/{tx_hash.hex()}"
+            }
+
+            self.context.shared_state['txs'].append(obj)
+        except Exception as e:
+            self.context.logger.error(f"FAILED TO SEND TRANSACTION: {e}")
+            return
+
+
+        # from aea.helpers.transaction.base import SignedTransaction
+        # tx = SignedTransaction( ledger_id=ledger_api_dialogue.terms.ledger_id, body=signed_tx
+
         ledger_api_msg, submission_dialogue = ledger_api_dialogues.create(
             counterparty=last_ledger_api_msg.sender,
             performative=LedgerApiMessage.Performative.SEND_SIGNED_TRANSACTION,
@@ -696,7 +731,7 @@ class SigningHandler(Handler):
         ledger_api_msg.signed_transaction._ledger_id = ledger_api_dialogue.initial_ledger_id
         submission_dialogue.terms = ledger_api_dialogue.terms
         submission_dialogue.initial_ledger_api_dialogue = ledger_api_dialogue
-        self.context.outbox.put_message(message=ledger_api_msg)
+        # self.context.outbox.put_message(message=ledger_api_msg)
         self.context.logger.info("sending transaction to ledger.")
 
     def _handle_error(

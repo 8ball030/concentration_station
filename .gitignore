@@ -2,6 +2,7 @@
 .DS_Store
 .pytest_cache
 coverage.xml
+.env
 .tox
 .coverage
 htmlcov
