@@ -1,33 +1,41 @@
 <script>
 	// @ts-nocheck
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 	import { ProgressBar, getToastStore } from '@skeletonlabs/skeleton';
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
-	import {state, mode, chain} from '$lib/stores'
-	import { LikedCoins } from '$lib/likedCoins';
-	import {getCurrentCoin, getLedgers, postSwap} from '$lib/actions';
-	import {SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE, CHAIN_ID_TO_LEDGER_ID} from '$lib/consts'
-    import {transactionLink} from '$lib/stores'
+	import { state, mode, chain, currentCoin, likedCount } from '$lib/stores';
+	import { getCurrentCoin, getLedgers, postSwap } from '$lib/actions';
+	import {
+		SOCKET_URL,
+		INTENTION_DIRECTIONS,
+		MOVE_DIRECTION,
+		APP_MODE,
+		CHAIN_ID_TO_LEDGER_ID
+	} from '$lib/consts';
+	import { transactionLink } from '$lib/stores';
 
+	const { DISLIKE, LIKE } = INTENTION_DIRECTIONS;
 	const socket = io(SOCKET_URL, {});
-	
+
 	$: connection_status = socket.connected;
 
-	let chain_id;
-	let coin = {}
-	let cardList = [0]
-    let explorerLink = ''
+	let chainId;
+	let coin = null;
+	let cardList = [0];
+	let explorerLink = '';
+	let longestStreak = 0;
+	let count = 0;
 
-	const likedCoinsList = new LikedCoins();
+	$: index = 0;
 
 	// states
-	let loading = false
+	let loading = false;
 	let handling = false;
-	
-	$: modeValue = ""
-	$:outMoveDirection = 0;
+
+	$: modeValue = '';
+	$: outMoveDirection = 0;
 
 	const toastStore = getToastStore();
 	const succssesToast = {
@@ -46,6 +54,12 @@
 	transactionLink.subscribe((value) => {
 		explorerLink = value;
 	});
+	likedCount.subscribe((val) => {
+		count += val;
+	});
+	state.subscribe((value) => {
+		cardList = value;
+	});
 
 	$: mode.subscribe((value) => {
 		modeValue = value;
@@ -57,10 +71,10 @@
 	});
 
 	$: chain.subscribe((value) => {
-		chain_id = value;
+		chainId = value;
 	});
 
-	onMount(() =>{
+	onMount(() => {
 		socket.on('connect', () => {
 			const setting = {
 				message: 'Successfully connected to the agent!',
@@ -68,7 +82,7 @@
 				background: 'variant-ghost-success',
 				max: 1
 			};
-			toastStore.trigger(setting)
+			toastStore.trigger(setting);
 			connection_status = true;
 		});
 
@@ -80,24 +94,21 @@
 				background: 'variant-ghost-error',
 				max: 1
 			};
-			toastStore.trigger(setting)
+			toastStore.trigger(setting);
 		});
-		
-		socket.on('data', (data) => {
 
+		socket.on('data', (data) => {
 			if (APP_MODE.DEGEN === modeValue) {
 				if (!handling && coin?.id) {
-
 					const intention = JSON.parse(data).intention;
-					const row = coin?.id + " " + intention;
+					const row = coin?.id + ' ' + intention;
 					const intentToast = {
-						message: "🔮 " + row + " 🔮",
+						message: '🔮 ' + row + ' 🔮',
 						timeout: 2500,
 						background: 'variant-ghost-info',
 						classes: 'info-toast',
 						position: 't',
 						max: 1
-
 					};
 					toastStore.trigger(intentToast);
 					updateActiveCard(intention);
@@ -105,44 +116,33 @@
 				}
 			}
 		});
-	})
+	});
 
 	state.subscribe((value) => {
 		cardList = value;
 	});
 
-	function updateActiveCard(intentionDirection) {
-		console.log('updateActiveCard', intentionDirection)
-		outMoveDirection = MOVE_DIRECTION[intentionDirection];
-		if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
-			cardList = [cardList.slice(1)];
-		} else {
-			cardList = [cardList.slice(1)];
-		}
-
-		handling = false
+	function updateActiveCard() {
+		cardList = [cardList.slice(1)];
+		handling = false;
 	}
 
-	function handleUpdateLiked(intentionDirection) {
-		if (intentionDirection === INTENTION_DIRECTIONS.DISLIKE) {
-			// likedCoinsList.remove(coin);
-		} else {
-			// likedCoinsList.add(coin);
-		}
-	}
-
-	// when we get intention from socket submit a swap on liked ( 'right' ) 
+	// when we get intention from socket submit a swap on liked ( 'right' )
 	async function handleIntention(intentionDirection) {
-		handleUpdateLiked()
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
-		loading = true
-		handling = true
-		const res = await postSwap(coin.id, intentionDirection, CHAIN_ID_TO_LEDGER_ID[chain_id], handleApiError)
+		loading = true;
+		handling = true;
+		const res = await postSwap(
+			coin.id,
+			intentionDirection,
+			CHAIN_ID_TO_LEDGER_ID[chainId],
+			handleApiError
+		);
 
-		if (res) {
-			getCoin()
-			updateActiveCard(intentionDirection)
-			
+		if (!res?.error) {
+			getCoin();
+			updateActiveCard();
+
 			if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
 				const submittedToast = {
 					message: `🤞🏼 Transaction submitted 🤞🏼`,
@@ -154,16 +154,20 @@
 				toastStore.trigger(succssesToast);
 			}
 		} else {
-			handling = false
+			handling = false;
 		}
-		loading = false
+		loading = false;
 	}
 
-	async function getCoin(){
-		coin = await getCurrentCoin(handleApiError)
+	async function getCoin() {
+		let res = await getCurrentCoin(handleApiError);
+		if (!res?.error) {
+			currentCoin.set(res);
+			coin = res;
+		}
 	}
-	
-	function handleApiError(endpoint, err){
+
+	function handleApiError(endpoint, err) {
 		const errorToast = {
 			message: ` =( ${err} ${endpoint}`,
 			background: 'variant-filled-error',
@@ -171,25 +175,51 @@
 		};
 		toastStore.trigger(errorToast);
 	}
-	
+
 	onMount(() => {
-		getCoin()
+		getCoin();
 	});
 </script>
 
-<div class="stack grid place-items-center mt-40">
-	{#each cardList as dummy (dummy)}
-		<Card
-			coin={coin}
-			chainId={chain_id}
-			outMoveDirection={outMoveDirection}
-			onbuttonTapped={handleIntention} />
-	{/each}
-	{#if loading}
-		<div class="w-96">
-			<ProgressBar value={undefined} />
-		</div>
-	{/if}
+<div class="flex justify-between">
+	<div class="font-semibold flex gap-10 p-10">
+		{#if coin?.name}
+			<div>{coin?.name} - Market Cap: {coin?.data?.market_cap || ''}</div>
+			<div>Total Volume: {coin?.data?.total_volume || ''}</div>
+		{/if}
+	</div>
+	<div class="font-semibold flex gap-10 p-10">
+		<div>Current Streak: {count}</div>
+		<div>Longest Streak: {longestStreak}</div>
+	</div>
+</div>
+<hr class="opacity-50" />
+<div class="flex justify-center">
+	<button
+		disabled={!coin?.name}
+		class="btn btn-outline btn-primary btn-lg"
+		on:click={() => {
+			outMoveDirection = MOVE_DIRECTION[DISLIKE];
+			handleIntention(DISLIKE, coin, chainId);
+		}}
+	>
+		<img class="like" src="./left.png" alt="left" />
+	</button>
+	<div class="place-items-center mt-20">
+		{#each cardList as dummy (dummy)}
+			<Card {loading} {coin} {chainId} {outMoveDirection} />
+		{/each}
+	</div>
+	<button
+		disabled={!coin?.name}
+		class="btn btn-outline btn-secondary btn-lg"
+		on:click={() => {
+			outMoveDirection = MOVE_DIRECTION[LIKE];
+			handleIntention(LIKE, coin, chainId);
+		}}
+	>
+		<img class="like" src="./right.png" alt="right" />
+	</button>
 </div>
 
 <style>

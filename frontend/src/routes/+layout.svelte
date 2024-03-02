@@ -4,6 +4,7 @@
 	import { base } from '$app/paths';
 	import SelectMode from '$lib/components/SelectMode.svelte';
 	import SelectChain from '$lib/components/SelectChain.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -36,15 +37,13 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">
-					<a
-						href={`/`}
-						rel="noreferrer"
-					>
-					Speculation Station
-				</a>
-					
-				</strong>
+				<div class="flex gap-20">
+					<strong class="text-xl">
+						<a href={`/`} rel="noreferrer"> Speculation Station </a>
+					</strong>
+					<a class="text-xl" href={`${base}/profile`}> Profile </a>
+					<a class="text-xl" href={`${base}/activity`}> Activity </a>
+				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<SelectMode />
@@ -55,11 +54,14 @@
 					target="_blank"
 					rel="noreferrer"
 				>
-					❤️ 
+					❤️
 				</a>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->
 	<slot />
+	<svelte:fragment slot="pageFooter">
+		<Footer />
+	</svelte:fragment>
 </AppShell>
