@@ -7,22 +7,23 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   __init__.py: bafybeibwssulepekywb5lsmt24izi36pldfghmcwfpso46rpvovsfbcnmq
-  behaviours.py: bafybeihp6fhikyqd25vddvteg4iorlfhbnfspujfcsbkz7v6zsehr55piy
+  behaviours.py: bafybeibf2usuuxbpgb47phizvi3bx6a26ggfoszxfknjnyes4poraarn7q
   dialogues.py: bafybeia37qtkxskincbgsbnjirwhvgj5ledj3f2rsyjoyizhzwzl7xbdli
-  handlers.py: bafybeieq2r23e5obkeyoo6qd25aphv5256gqsaaccldxtjmwr4oyhpulqu
-  strategy.py: bafybeibeeljm545tvgplzqvv5lfve3au4cgeov45jnmm26zydcf24fjtke
+  handlers.py: bafybeieyacfdmoaon357lsko5ik4xjnsjiayidwdbn5x6zsv6prhl7ia5i
+  strategy.py: bafybeib3xahqag7rgmmvwmco62wle5dsedpc5qv2qx6bwdhossuuylvjde
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeierw3ptzrhxoc4frwowkdceyijn65xjcj3keq3mlwdy6g4xj3ikpu
-- valory/ledger:0.19.0:bafybeiecj7qddoorvzda7kj5izvlqlj7omrjlnzgpw4eyg6crtzkadqkwa
+- valory/ledger:0.19.0:bafybeighklpwb7qjt2bg74p2sjko4uenmlq5kveec7w2erlhxvzcdbqiki
 contracts: []
 protocols:
 - open_aea/signing:1.0.0:bafybeig7ijceilgb22q7yg65jok7n5bmo3uogezpz4tltmil2xh7ib6e5q
 - valory/ledger_api:1.0.0:bafybeidltb2fvcfokf7a2i3jnrf4kmmsn5bxmcrwdtbz2nrrzhpj4dlzwe
+- valory/contract_api:1.0.0:bafybeib3abpck4a6a63vyymd2pdiwijdsqk43hrrxz734v5ghxje46pxgm
 - eightballer/http:0.1.0:bafybeibels7dv7ucflaeniwifbisvkegm5vrarrr5ctkcqebg4t7onba6a
 - eightballer/orders:0.1.0:bafybeicp3y52vrvwfnkjpymlprmluoculyj5xv5a24cr3gb3sjbhfbgf7y
 skills:
-- eightballer/concentration_api:0.1.0:bafybeia3eynp5gsqll27swqz2cqsz3p5bykscifl6zyi5krvy22vj3i2vq
+- eightballer/concentration_api:0.1.0:bafybeibvel2eslev6leqcayhwr5axtmpcxde3xqkfqqz2wwzdisyhgzhcq
 behaviours:
   price_routing_behaviour:
     class_name: TransactionPreparationBehaviour

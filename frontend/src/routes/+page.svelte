@@ -5,9 +5,16 @@
 	import io from 'socket.io-client';
 
 	import Card from '$lib/components/Card.svelte';
-	import { getCurrentCoin, postSwap } from '$lib/actions';
 	import { state, mode, chain } from '$lib/stores';
-	import { SOCKET_URL, APP_MODE, STATUS_MSGS } from '$lib/consts';
+	import { LikedCoins } from '$lib/likedCoins';
+	import { getCurrentCoin, getLedgers, postSwap } from '$lib/actions';
+	import {
+		SOCKET_URL,
+		INTENTION_DIRECTIONS,
+		MOVE_DIRECTION,
+		APP_MODE,
+		CHAIN_ID_TO_LEDGER_ID
+	} from '$lib/consts';
 	import { transactionLink, likedCount, recentTrx, currentCoin } from '$lib/stores';
 	import * as buffer from 'buffer';
 
@@ -103,7 +110,12 @@
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true;
 		handling = true;
-		const res = await postSwap(coin?.id, intentionDirection, chainId, handleApiError);
+		const res = await postSwap(
+			coin.id,
+			intentionDirection,
+			CHAIN_ID_TO_LEDGER_ID[chainId],
+			handleApiError
+		);
 
 		if (!res.error) {
 			getCoin();
