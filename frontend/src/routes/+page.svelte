@@ -6,14 +6,14 @@
 
 	import Card from '$lib/components/Card.svelte';
 	import { state, mode, chain } from '$lib/stores';
-	import { LikedCoins } from '$lib/likedCoins';
 	import { getCurrentCoin, getLedgers, postSwap } from '$lib/actions';
 	import {
 		SOCKET_URL,
 		INTENTION_DIRECTIONS,
 		MOVE_DIRECTION,
 		APP_MODE,
-		CHAIN_ID_TO_LEDGER_ID
+		CHAIN_ID_TO_LEDGER_ID,
+		STATUS_MSGS
 	} from '$lib/consts';
 	import { transactionLink, likedCount, recentTrx, currentCoin } from '$lib/stores';
 	import * as buffer from 'buffer';
