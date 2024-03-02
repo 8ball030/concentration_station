@@ -6,7 +6,7 @@
 
 	import Card from '$lib/components/Card.svelte';
 	import { state, mode, chain } from '$lib/stores';
-	import { getCurrentCoin, getLedgers, postSwap } from '$lib/actions';
+	import { getCurrentCoin, postSwap } from '$lib/actions';
 	import {
 		SOCKET_URL,
 		INTENTION_DIRECTIONS,
@@ -15,9 +15,8 @@
 		CHAIN_ID_TO_LEDGER_ID,
 		STATUS_MSGS
 	} from '$lib/consts';
-	import { transactionLink, likedCount, recentTrx, currentCoin } from '$lib/stores';
+	import { transactionLink, likedCount, currentCoin } from '$lib/stores';
 	import * as buffer from 'buffer';
-	import { mockList } from '$lib/mock';
 
 	const { DISLIKE, LIKE } = INTENTION_DIRECTIONS;
 
