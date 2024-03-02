@@ -1,9 +1,15 @@
 <script>
+	// @ts-nocheck
+	import { onMount } from 'svelte';
+
 	import '../app.postcss';
 	import { AppShell, AppBar, Modal, Toast, initializeStores } from '@skeletonlabs/skeleton';
 	import { base } from '$app/paths';
 	import SelectMode from '$lib/components/SelectMode.svelte';
+	import Connect from '$lib/components/Connect.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import SelectChain from '$lib/components/SelectChain.svelte';
+	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -26,6 +32,10 @@
 
 	initializeStores();
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
+
+	onMount(() => {
+		autoModeWatcher();
+	});
 </script>
 
 <Toast />
@@ -36,15 +46,13 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">
-					<a
-						href={`/`}
-						rel="noreferrer"
-					>
-					Speculation Station
-				</a>
-					
-				</strong>
+				<div class="flex gap-20">
+					<strong class="text-xl">
+						<a href={`/`} rel="noreferrer"> Speculation Station </a>
+					</strong>
+					<a class="text-xl" href={`${base}/profile`}> Profile </a>
+					<a class="text-xl" href={`${base}/activity`}> Activity </a>
+				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<SelectMode />
@@ -55,11 +63,15 @@
 					target="_blank"
 					rel="noreferrer"
 				>
-					❤️ 
+					❤️
 				</a>
+				<Connect />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<!-- Page Route Content -->
 	<slot />
+	<svelte:fragment slot="pageFooter">
+		<Footer />
+	</svelte:fragment>
 </AppShell>
