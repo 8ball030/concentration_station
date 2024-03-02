@@ -15,7 +15,7 @@ async function getRequest(endpoinName, handleError) {
         }
     } catch (err) {
         handleError(endpoinName, err)
-        return err
+        return { error: err }
     }
 }
 /**
@@ -35,7 +35,7 @@ async function postRequest(endpoinName, body, handleError) {
         }
     } catch (err) {
         handleError(endpoinName, err)
-        return err
+        return { error: err }
     }
 }
 

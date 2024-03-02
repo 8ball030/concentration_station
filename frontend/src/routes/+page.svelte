@@ -8,7 +8,7 @@
 	import { getCurrentCoin, postSwap } from '$lib/actions';
 
 	import { state, mode, chain } from '$lib/stores';
-	import { SOCKET_URL, INTENTION_DIRECTIONS, MOVE_DIRECTION, APP_MODE } from '$lib/consts';
+	import { SOCKET_URL, MOVE_DIRECTION, APP_MODE, STATUS_MSGS } from '$lib/consts';
 	import { transactionLink, likedCount, recentTrx } from '$lib/stores';
 	import * as buffer from 'buffer';
 
@@ -16,8 +16,8 @@
 
 	$: connection_status = socket.connected;
 
-	let chain_id;
-	let coin = {};
+	let chainId;
+	let coin = null;
 	let cardList = [0];
 	let explorerLink = '';
 
@@ -27,27 +27,18 @@
 	let count = 0;
 
 	$: modeValue = '';
-	$: outMoveDirection = 0;
 
 	const toastStore = getToastStore();
-	const succssesToast = {
-		message: `👍🏼 Transaction submitted and being processed`,
-		// action: {
-		// 	label: 'See on Exlorer',
-		// 	response: () => window.open(explorerLink, '_blank').focus()
-		// },
-		timeout: 1000,
-		background: 'variant-filled-success',
-		button: 'variant-ghost-success',
-		classes: 'success-toast',
-		max: 1
-	};
 
+	// store subscriptions
 	transactionLink.subscribe((value) => {
 		explorerLink = value;
 	});
 	likedCount.subscribe((val) => {
 		count += val;
+	});
+	state.subscribe((value) => {
+		cardList = value;
 	});
 
 	$: mode.subscribe((value) => {
@@ -60,10 +51,11 @@
 	});
 
 	$: chain.subscribe((value) => {
-		chain_id = value;
+		chainId = value;
 	});
 
 	onMount(() => {
+		// this is needed to address errors similar to https://github.com/vitejs/vite/issues/9703
 		if (typeof window.global === 'undefined') {
 			window.global = window;
 		}
@@ -72,25 +64,13 @@
 		}
 
 		socket.on('connect', () => {
-			const setting = {
-				message: 'Successfully connected to the agent!',
-				timeout: 3000,
-				background: 'variant-ghost-success',
-				max: 1
-			};
-			toastStore.trigger(setting);
+			toastStore.trigger(STATUS_MSGS.AGENT_SUCCESS);
 			connection_status = true;
 		});
 
 		socket.on('disconnect', () => {
 			connection_status = false;
-			const setting = {
-				message: 'Disconnected from the agent!',
-				timeout: 3000,
-				background: 'variant-ghost-error',
-				max: 1
-			};
-			toastStore.trigger(setting);
+			toastStore.trigger(STATUS_MSGS.AGENT_FAIL);
 		});
 
 		socket.on('data', (data) => {
@@ -98,15 +78,7 @@
 				if (!handling && coin?.id) {
 					const intention = JSON.parse(data).intention;
 					const row = coin?.id + ' ' + intention;
-					const intentToast = {
-						message: '🔮 ' + row + ' 🔮',
-						timeout: 2500,
-						background: 'variant-ghost-info',
-						classes: 'info-toast',
-						position: 't',
-						max: 1
-					};
-					toastStore.trigger(intentToast);
+					toastStore.trigger(STATUS_MSGS.AGENT_DATA(row));
 					updateActiveCard(intention);
 					handleIntention(intention);
 				}
@@ -116,15 +88,8 @@
 		getCoin();
 	});
 
-	state.subscribe((value) => {
-		cardList = value;
-	});
-
-	function updateActiveCard(intentionDirection) {
-		console.log('updateActiveCard', intentionDirection);
-		outMoveDirection = MOVE_DIRECTION[intentionDirection];
+	function updateActiveCard() {
 		cardList = [cardList.slice(1)];
-
 		handling = false;
 	}
 
@@ -133,19 +98,14 @@
 		// data shape {'intention': random.choice(['LEFT', 'RIGHT'])}
 		loading = true;
 		handling = true;
-		const res = await postSwap(coin.id, intentionDirection, chain_id, handleApiError);
+		const res = await postSwap(coin?.id, intentionDirection, chain_id, handleApiError);
 
-		if (res) {
+		if (!res.error) {
 			getCoin();
-			updateActiveCard(intentionDirection);
+			updateActiveCard();
 
 			if (intentionDirection === INTENTION_DIRECTIONS.LIKE) {
-				const submittedToast = {
-					message: `🤞🏼 Transaction submitted 🤞🏼`,
-					timeout: 1000,
-					max: 1
-				};
-				toastStore.trigger(submittedToast);
+				toastStore.trigger(STATUS_MSGS.TX_SUCCESS);
 				// TODO: some check here with a callback to get the transaction hash
 				toastStore.trigger(succssesToast);
 			}
@@ -156,22 +116,18 @@
 	}
 
 	async function getCoin() {
-		coin = await getCurrentCoin(handleApiError);
+		let res = await getCurrentCoin(handleApiError);
+		if (!res?.error) coin = res;
 	}
 
 	function handleApiError(endpoint, err) {
-		const errorToast = {
-			message: ` =( ${err} ${endpoint}`,
-			background: 'variant-filled-error',
-			classes: 'error-toast'
-		};
-		toastStore.trigger(errorToast);
+		toastStore.trigger(STATUS_MSGS.API_ERROR(endpoint, err));
 	}
 </script>
 
 <div class="stack grid place-items-center mt-40">
 	{#each cardList as dummy (dummy)}
-		<Card {coin} chainId={chain_id} {outMoveDirection} onbuttonTapped={handleIntention} />
+		<Card {coin} chainId onbuttonTapped={handleIntention} />
 	{/each}
 	{#if loading}
 		<div class="w-96">

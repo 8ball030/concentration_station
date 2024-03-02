@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const APP_MODE = {
   NORMAL: 'Manual',
   AGENT: 'Augmented',
@@ -47,3 +48,36 @@ export const CHAIN_NAME = {
 export const BASE_URL = 'http://192.168.222.31:5553'
 export const SOCKET_URL = 'http://192.168.222.31:5554'
 export const DEFAULT_CHAIN = CHAIN_MODE.ARBITRUM
+
+export const STATUS_MSGS = {
+  TX_SUCCESS: {
+    message: `🤞🏼 Transaction submitted 🤞🏼`,
+    timeout: 1000,
+    max: 1
+  },
+  AGENT_SUCCESS: {
+    message: 'Successfully connected to the agent!',
+    timeout: 3000,
+    background: 'variant-ghost-success',
+    max: 1
+  },
+  AGENT_FAIL: {
+    message: 'Disconnected from the agent!',
+    timeout: 3000,
+    background: 'variant-ghost-error',
+    max: 1
+  },
+  AGENT_DATA: (row) => ({
+    message: '🔮 ' + row + ' 🔮',
+    timeout: 2500,
+    background: 'variant-ghost-info',
+    classes: 'info-toast',
+    position: 't',
+    max: 1
+  }),
+  API_ERROR: (endpoint, err) => ({
+    message: ` =( ${err} ${endpoint}`,
+    background: 'variant-filled-error',
+    classes: 'error-toast'
+  })
+}
