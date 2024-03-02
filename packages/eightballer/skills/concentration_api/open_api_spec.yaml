@@ -92,5 +92,97 @@ paths:
                 properties:
                   transactions:
                     type: array
+  /users:
+    get:
+      summary: Returns a list of users
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+    post:
+      summary: Creates a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                proof:
+                  type: string
+              required:
+                - address
+                - proof
+      responses:
+        '201':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+  /users/{user_id}:
+    get:
+      summary: Returns a user by id
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                  proof:
+                    type: string
+                  status:
+                    type: string
 
+  /config:
+    get:
+      summary: Returns the current configuration
+      responses:
+        '200':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  config:
+                    type: object
+    post:
+      summary: Updates the current configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config:
+                  type: object
+              required:
+                - config
+      responses:
+        '201':
+          description: A Json response
+          content:
+            application/json:
+              schema:
+                type: object
 
