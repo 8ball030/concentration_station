@@ -23,6 +23,7 @@ open-aea = "==1.35.0"
 matplotlib = "==3.8.3"
 pylsl= "==1.16.2"
 dlib = "==19.24.2"
+scikit-learn = "==1.4.1.post1"
 
 
 aiohttp = "==3.8.3"
